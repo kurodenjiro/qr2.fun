@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#ff6b9b",
+                        "secondary-fixed": "#2ff801",
+                        "inverse-primary": "#006a71",
+                        "outline": "#767575",
+                        "on-tertiary-fixed": "#380017",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "surface": "#0e0e0e",
+                        "surface-container-high": "#201f1f",
+                        "secondary-fixed-dim": "#2be800",
+                        "on-primary": "#005d63",
+                        "on-secondary-fixed": "#064200",
+                        "on-primary-fixed-variant": "#005e64",
+                        "inverse-surface": "#fcf9f8",
+                        "tertiary-container": "#ff067f",
+                        "on-surface-variant": "#adaaaa",
+                        "primary-fixed-dim": "#00deec",
+                        "on-tertiary-fixed-variant": "#760037",
+                        "on-background": "#ffffff",
+                        "primary-fixed": "#00eefc",
+                        "on-error-container": "#ffa8a3",
+                        "on-error": "#490006",
+                        "on-surface": "#ffffff",
+                        "on-tertiary-container": "#000000",
+                        "secondary": "#2ff801",
+                        "outline-variant": "#484847",
+                        "surface-container": "#1a1919",
+                        "error": "#ff716c",
+                        "tertiary-dim": "#e30071",
+                        "on-primary-container": "#005359",
+                        "secondary-container": "#106e00",
+                        "primary": "#8ff5ff",
+                        "surface-container-highest": "#262626",
+                        "surface-dim": "#0e0e0e",
+                        "surface-variant": "#262626",
+                        "on-secondary": "#0b5800",
+                        "surface-bright": "#2c2c2c",
+                        "surface-container-low": "#131313",
+                        "tertiary-fixed-dim": "#ff75a0",
+                        "error-container": "#9f0519",
+                        "error-dim": "#d7383b",
+                        "secondary-dim": "#2be800",
+                        "on-primary-fixed": "#003f43",
+                        "primary-container": "#00eefc",
+                        "background": "#0e0e0e",
+                        "surface-tint": "#8ff5ff",
+                        "on-secondary-container": "#e7ffd9",
+                        "primary-dim": "#00deec",
+                        "tertiary-fixed": "#ff8eae",
+                        "on-tertiary": "#47001f",
+                        "surface-container-lowest": "#000000",
+                        "inverse-on-surface": "#565555"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0e0e0e;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(143, 245, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(47, 248, 1, 0.05) 0%, transparent 40%);
+        }
+        .glitch-border {
+            position: relative;
+        }
+        .glitch-border::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid rgba(143, 245, 255, 0.15);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .data-noise {
+            font-family: 'Inter', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            opacity: 0.4;
+        }
+        .corner-bracket {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #8ff5ff;
+        }
+        .bracket-tl { top: 0; left: 0; border-top: 1px solid; border-left: 1px solid; }
+        .bracket-tr { top: 0; right: 0; border-top: 1px solid; border-right: 1px solid; }
+        .bracket-bl { bottom: 0; left: 0; border-bottom: 1px solid; border-left: 1px solid; }
+        .bracket-br { bottom: 0; right: 0; border-bottom: 1px solid; border-right: 1px solid; }
+        
+        .step-number {
+            -webkit-text-stroke: 1px rgba(143, 245, 255, 0.3);
+            color: transparent;
+            transition: all 0.4s ease;
+        }
+        .group:hover .step-number {
+            color: #8ff5ff;
+            -webkit-text-stroke: 1px #8ff5ff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background selection:bg-primary selection:text-on-primary">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-12 py-6 bg-[#0e0e0e]/80 backdrop-blur-xl border-b-0">
+<div class="flex items-center gap-12">
+<span class="text-2xl font-bold tracking-tighter text-primary italic font-headline">KINETIC_VOID</span>
+<div class="hidden md:flex gap-8">
+<a class="font-headline uppercase tracking-[0.1em] text-sm text-secondary border-b-2 border-secondary pb-1 transition-all duration-300 skew-x-[-12deg]" href="#">CATALOGUE</a>
+<a class="font-headline uppercase tracking-[0.1em] text-sm text-primary opacity-70 hover:opacity-100 hover:text-secondary transition-all duration-300" href="#">COLLECTIONS</a>
+<a class="font-headline uppercase tracking-[0.1em] text-sm text-primary opacity-70 hover:opacity-100 hover:text-secondary transition-all duration-300" href="#">ARCHIVE</a>
+<a class="font-headline uppercase tracking-[0.1em] text-sm text-primary opacity-70 hover:opacity-100 hover:text-secondary transition-all duration-300" href="#">MANIFESTO</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-primary hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="text-primary hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Separation Logic Divider -->
+<div class="fixed top-[88px] left-0 bg-[#131313] h-[2px] w-full z-40"></div>
+<main class="pt-24">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex flex-col md:flex-row items-center justify-center px-12 gap-12 overflow-hidden">
+<div class="z-10 w-full md:w-1/2 space-y-8">
+<div class="space-y-2">
+<span class="font-label text-xs tracking-[0.3em] text-secondary-fixed uppercase">SYSTEM_INIT // 2024</span>
+<h1 class="text-7xl md:text-9xl font-bold font-headline tracking-tighter leading-none italic uppercase">
+                    WEAR YOUR <br/> <span class="text-primary">DNA</span>
+</h1>
+</div>
+<p class="max-w-md font-body text-on-surface-variant text-lg leading-relaxed">
+                Personalized algorithmic fashion. We translate your unique digital signature into high-performance kinetic apparel. No two pieces are identical.
+            </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="bg-primary text-on-primary px-10 py-4 font-headline font-bold uppercase tracking-widest hover:bg-primary-container transition-all relative group">
+                    CREATE AND SELL
+                    <div class="absolute -bottom-2 -right-2 w-full h-full border border-primary/30 -z-10 group-hover:bottom-0 group-hover:right-0 transition-all"></div>
+</button>
+<button class="border-2 border-outline-variant text-secondary px-10 py-4 font-headline font-bold uppercase tracking-widest hover:border-secondary transition-all">
+                    EXPLORE
+                </button>
+</div>
+<div class="data-noise mt-12 flex gap-8">
+<span>GEN_CORE: v4.2.0</span>
+<span>THROUGHPUT: 128.8 TB/S</span>
+<span>LATENCY: 0.002MS</span>
+</div>
+</div>
+<div class="relative w-full md:w-1/2 flex justify-center items-center">
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full blur-[120px]"></div>
+<div class="relative group">
+<div class="absolute -top-4 -left-4 bg-secondary text-on-secondary-fixed font-headline font-black px-4 py-2 text-sm z-20 skew-x-[-12deg]">
+                    NEW RELEASE
+                </div>
+<div class="bg-surface-container-high p-4 relative overflow-hidden border border-outline-variant/15">
+<div class="bracket-tl corner-bracket"></div>
+<div class="bracket-tr corner-bracket"></div>
+<div class="bracket-bl corner-bracket"></div>
+<div class="bracket-br corner-bracket"></div>
+<img alt="Futuristic T-shirt design" class="w-full h-auto grayscale hover:grayscale-0 transition-all duration-700 object-cover aspect-[4/5]" data-alt="Avant-garde black oversized t-shirt with iridescent digital print details against a dark architectural concrete background with neon reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeJHJIZKwsRZOpVTMSJKYhl6Qhu0FsiRCEkKBOnGyUrTtnvidBY7gvX15I5Wqk6HjpYCj3N4SLle2tac5_YdCS4UPgiTiSkL5lucOTpBzv-hIAWL91hwD6sigcLuLyv1bA4ES0X_-OeAvtWGI7t8aCYspOQhkGaMnn_AvItZeGxiojSZGFVhyrjJfXHU1ftMFqh68CLBaP_h3jzHARqNC5GqjHm1HuYgbzhz8z0ENI2DE2TPtcLHFAdaNvZWSopyIE21fsoQ5PbP0"/>
+</div>
+<div class="mt-4 flex justify-between items-end">
+<div>
+<h3 class="font-headline text-2xl font-bold tracking-tight">KINETIC_VOID_01</h3>
+<span class="font-label text-xs text-primary opacity-60">SERIES: VOID_CORE</span>
+</div>
+<div class="text-right">
+<span class="block text-secondary font-headline font-bold text-xl">$145.00</span>
+<span class="data-noise">STOCK: LOW</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Improved The Process Section -->
+<section class="py-32 px-12 bg-surface-container-low border-y border-outline-variant/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 data-noise text-[8px] opacity-20 pointer-events-none">
+            01001001 01001110 01010100 01000101 01010010 01000110 01000001 01000011 01000101
+        </div>
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="w-12 h-[1px] bg-secondary"></span>
+<span class="font-label text-xs tracking-[0.3em] text-secondary uppercase">SYNTHESIS_PIPELINE</span>
+</div>
+<h2 class="text-5xl md:text-7xl font-bold font-headline uppercase tracking-tighter italic">THE PROCESS</h2>
+</div>
+<div class="max-w-md border-l-2 border-primary/30 pl-8 py-2">
+<p class="font-body text-on-surface-variant text-base leading-relaxed">
+                    Our proprietary synthesis engine processes your digital existence into unique geometric patterns which are then precision-printed onto tech-fabrics.
+                </p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-outline-variant/15 bg-surface-container relative">
+<!-- Step 1 -->
+<div class="p-12 border-b md:border-b-0 md:border-r border-outline-variant/15 hover:bg-surface-container-high transition-all duration-500 group relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-7xl font-black font-headline step-number">01</span>
+<span class="material-symbols-outlined text-primary/30 group-hover:text-primary transition-colors text-4xl" data-icon="alternate_email">alternate_email</span>
+</div>
+<h3 class="text-3xl font-bold font-headline mb-4 uppercase tracking-tighter group-hover:text-primary transition-colors">INPUT HANDLE</h3>
+<p class="text-on-surface-variant leading-relaxed text-lg mb-8">
+                    Connect your Twitter identity. Our scraper initializes the data harvest from your social graph and public discourse.
+                </p>
+<div class="flex items-center gap-2 data-noise text-secondary">
+<span class="w-2 h-2 bg-secondary animate-pulse"></span>
+<span>READY_FOR_HOOK</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="p-12 border-b md:border-b-0 md:border-r border-outline-variant/15 hover:bg-surface-container-high transition-all duration-500 group relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-7xl font-black font-headline step-number">02</span>
+<span class="material-symbols-outlined text-secondary/30 group-hover:text-secondary transition-colors text-4xl" data-icon="biotech">biotech</span>
+</div>
+<h3 class="text-3xl font-bold font-headline mb-4 uppercase tracking-tighter group-hover:text-secondary transition-colors">SYNTHESIZE</h3>
+<p class="text-on-surface-variant leading-relaxed text-lg mb-8">
+                    Neural networks analyze your digital DNA. We extract sentiment, frequency, and intent to synthesize a one-of-one autonomous agent.
+                </p>
+<div class="flex items-center gap-2 data-noise text-primary">
+<span class="w-2 h-2 bg-primary"></span>
+<span>ALGO_v4.2_ACTIVE</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="p-12 hover:bg-surface-container-high transition-all duration-500 group relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
+<div class="flex justify-between items-start mb-12">
+<span class="text-7xl font-black font-headline step-number">03</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 group-hover:text-white transition-colors text-4xl" data-icon="apparel">apparel</span>
+</div>
+<h3 class="text-3xl font-bold font-headline mb-4 uppercase tracking-tighter group-hover:text-on-background transition-colors">CREATE &amp; WEAR</h3>
+<p class="text-on-surface-variant leading-relaxed text-lg mb-8">
+                    Your unique gear is generated. Mint your design, list it in the catalogue, or order your physical thermal-locked artifact.
+                </p>
+<div class="flex items-center gap-2 data-noise text-on-surface-variant">
+<span class="w-2 h-2 bg-on-surface-variant"></span>
+<span>DISPATCH_PENDING</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Drops -->
+<section class="py-32 px-12">
+<div class="flex justify-between items-center mb-16">
+<h2 class="text-4xl font-bold font-headline tracking-tighter italic">RECENT_DROPS</h2>
+<a class="text-primary font-label text-xs tracking-[0.2em] border-b border-primary pb-1 hover:text-secondary hover:border-secondary transition-all" href="#">VIEW_ALL_COLLECTIONS</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="group bg-surface-container-lowest border border-outline-variant/10 p-4 transition-all hover:bg-surface-container-high">
+<div class="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
+<img alt="Vector Tee" class="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" data-alt="Cyberpunk style black t-shirt with white abstract vector line graphics on the front, professional studio lighting on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSl3Y55V63oGOTb_F3KAcOxahFjnMyV1aTS6SHLHXF6ed731pzFw-M0efCEaI7IAdlg99ypoKnp0eqhq2YqA6z7gvxm5d-06JDpxB2YcOtRTC2rYUbsRWbdh6CJJOdnFZhUafROHqcNKIkbHlKLmaHAWjidlr0J79oMPI5jFAUdemUgb7HPDW7pAJpBnUc0jD6yjQYWFmsEJZ2l2WovkpTCTiBCN0ZY1yK_CX-WfLkitkaOKUdMLD_x3G69AD24Vl8VimlCV1kgTk"/>
+<div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
+                        SN: 882-VCTR
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-headline font-bold text-lg uppercase">Vector Tee</h4>
+<p class="data-noise">LIMITED_RUN_100</p>
+</div>
+<span class="text-primary font-headline font-bold">$110</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface-container-lowest border border-outline-variant/10 p-4 transition-all hover:bg-surface-container-high">
+<div class="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
+<img alt="Ghost Shirt" class="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" data-alt="Oversized premium white tee with translucent technical fabric overlays and minimal glitch typography in the center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgxp53_yvqlHcTKhbNYM_cUqv3O0A1MiObgSiLm6A5-46FxK9xweJyIYsNJXRItE_BmOyjyYXd8EMCRu1ne8lqxM4Fh-ReeUhd6UQ2JZGz0XUWPNAM-75YDH0HJeBHvp6PoDybptpGT-bIH8nF3DHknl-pjh7XD61BTOcXY9qC5F5KuP_KUm1gf4Ez1CifnqrFntYHJaP-zTzZJmdPYe1Oawlhq7SgM8Uh9tqqyDnXO9smjN1-yPzGvB82THG_RrpgIk1twRMk8JY"/>
+<div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
+                        SN: 004-GHST
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-headline font-bold text-lg uppercase">Ghost Shirt</h4>
+<p class="data-noise">LIMITED_RUN_50</p>
+</div>
+<span class="text-primary font-headline font-bold">$185</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface-container-lowest border border-outline-variant/10 p-4 transition-all hover:bg-surface-container-high">
+<div class="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
+<img alt="Identity Tee" class="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" data-alt="Dark gray tech-wear shirt with reflective thermal printed geometric patterns and utility pockets on the side" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4Uv9DGwsYfO_6pp8kkVaAAxAJ4-er2Uuxh-Fc5larjNmgYRv7E_DrH6GlkS7zZ6JL5Iut1NbMdRbAAqYrWnr22zvQZ3CFjTYCIK1bQCKrZvUD8Wu6iIb5Nf3cXAvoqdinNXVyB4aJNEXNiQTI6ve-Yv0EgyuirWsxfYMqKiRvBkOUwnpP8lPaxXzt8xr8oq6_rvZbytf_OufuopkPQwIthHo1TMrnOB0iw77rdt_3dCyOTLkZy0ZqtKDNQ4zDlqf8P3ujHwh-1fg"/>
+<div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
+                        SN: 312-IDNT
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-headline font-bold text-lg uppercase">Identity Tee</h4>
+<p class="data-noise">COLLECTORS_EDITION</p>
+</div>
+<span class="text-primary font-headline font-bold">$160</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / CTA -->
+<section class="py-24 px-12 border-t border-outline-variant/15">
+<div class="max-w-4xl mx-auto text-center space-y-10">
+<h2 class="text-4xl md:text-6xl font-bold font-headline uppercase tracking-tighter leading-none italic">
+                JOIN THE <span class="text-secondary">VOID_PROTOCOL</span>
+</h2>
+<p class="text-on-surface-variant font-body">Be the first to know about upcoming algorithm releases and drops.</p>
+<form class="flex flex-col md:flex-row gap-4 max-w-xl mx-auto">
+<input class="flex-grow bg-surface-container-low border-b-2 border-outline-variant focus:border-primary focus:ring-0 text-primary font-label text-sm p-4 transition-all" placeholder="ENTER_EMAIL_ADDR" type="email"/>
+<button class="bg-primary text-on-primary font-headline font-bold px-8 py-4 uppercase tracking-widest hover:bg-primary-container">SIGN_UP</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#000000] border-t border-[#484847]/15 py-12 px-12 w-full flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="text-lg font-black text-primary font-headline">KINETIC_VOID</span>
+<span class="font-mono text-[10px] tracking-[0.2em] uppercase text-[#484847]">©2024 KINETIC_VOID_OS. ALL RIGHTS RESERVED.</span>
+</div>
+<div class="flex gap-12">
+<a class="font-mono text-[10px] tracking-[0.2em] uppercase text-[#484847] hover:text-primary transition-colors" href="#">PRIVACY_PROTOCOL</a>
+<a class="font-mono text-[10px] tracking-[0.2em] uppercase text-[#484847] hover:text-primary transition-colors" href="#">TERMINAL_TERMS</a>
+<a class="font-mono text-[10px] tracking-[0.2em] uppercase text-[#484847] hover:text-primary transition-colors" href="#">CONNECT</a>
+</div>
+<div class="flex gap-6">
+<span class="data-noise">UPTIME: 99.98%</span>
+<span class="data-noise">LOC: 34.0522° N, 118.2437° W</span>
+</div>
+</footer>
+</body></html>

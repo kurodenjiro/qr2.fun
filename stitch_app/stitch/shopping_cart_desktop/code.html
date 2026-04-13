@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "surface-dim": "#0e0e0e",
+                  "surface-container-low": "#131313",
+                  "primary-fixed": "#00eefc",
+                  "on-primary-container": "#005359",
+                  "inverse-primary": "#006a71",
+                  "on-primary-fixed-variant": "#005e64",
+                  "tertiary-container": "#ff067f",
+                  "surface": "#0e0e0e",
+                  "surface-tint": "#8ff5ff",
+                  "on-tertiary-fixed": "#380017",
+                  "error": "#ff716c",
+                  "on-tertiary": "#47001f",
+                  "on-surface-variant": "#adaaaa",
+                  "tertiary-fixed-dim": "#ff75a0",
+                  "on-secondary-fixed": "#064200",
+                  "on-error": "#490006",
+                  "primary-fixed-dim": "#00deec",
+                  "surface-container-high": "#201f1f",
+                  "error-container": "#9f0519",
+                  "on-primary": "#005d63",
+                  "on-secondary": "#0b5800",
+                  "surface-bright": "#2c2c2c",
+                  "primary": "#8ff5ff",
+                  "on-secondary-container": "#e7ffd9",
+                  "error-dim": "#d7383b",
+                  "primary-container": "#00eefc",
+                  "surface-container": "#1a1919",
+                  "primary-dim": "#00deec",
+                  "secondary": "#2ff801",
+                  "inverse-surface": "#fcf9f8",
+                  "secondary-dim": "#2be800",
+                  "outline": "#767575",
+                  "on-tertiary-container": "#000000",
+                  "on-tertiary-fixed-variant": "#760037",
+                  "tertiary-dim": "#e30071",
+                  "background": "#0e0e0e",
+                  "outline-variant": "#484847",
+                  "on-primary-fixed": "#003f43",
+                  "surface-container-lowest": "#000000",
+                  "tertiary": "#ff6b9b",
+                  "surface-container-highest": "#262626",
+                  "on-surface": "#ffffff",
+                  "secondary-fixed-dim": "#2be800",
+                  "secondary-container": "#106e00",
+                  "on-background": "#ffffff",
+                  "surface-variant": "#262626",
+                  "tertiary-fixed": "#ff8eae",
+                  "on-secondary-fixed-variant": "#0d6200",
+                  "on-error-container": "#ffa8a3",
+                  "inverse-on-surface": "#565555",
+                  "secondary-fixed": "#2ff801"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0px",
+                  "lg": "0px",
+                  "xl": "0px",
+                  "full": "9999px"
+          },
+          "fontFamily": {
+                  "headline": ["Space Grotesk"],
+                  "body": ["Space Grotesk"],
+                  "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.glitch-text {
+    position: relative;
+    text-shadow: 2px 0 #ff6b9b, -2px 0 #2ff801
+    }
+.hud-bracket {
+    width: 10px;
+    height: 10px;
+    border-color: #484847;
+    position: absolute
+    }
+.hud-bracket-tl {
+    top: 0;
+    left: 0;
+    border-top: 1px solid;
+    border-left: 1px solid
+    }
+.hud-bracket-tr {
+    top: 0;
+    right: 0;
+    border-top: 1px solid;
+    border-right: 1px solid
+    }
+.hud-bracket-bl {
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid;
+    border-left: 1px solid
+    }
+.hud-bracket-br {
+    bottom: 0;
+    right: 0;
+    border-bottom: 1px solid;
+    border-right: 1px solid
+    }
+.noise-bg {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDNwvzJvd13fKUnQ3dndNrmv7cogsHCXFjXlTL6KpMD_Xej0jEfC9iHnv7yRInrm8aR40hf4LHY0tIPgzKnctR_aJWe45s0iy3OiS0Rt8coSWwFKDcWSFZHV3yMIWDEkKnuaj-9ycBtuvzC01u0B-Nzo8JRIu4VUiLPCdiv6e2hDn4I4q-Q1WOwzUUqsmyb9ZCidMBHxVUbKnBXoqacDL0xTWRoJ4idL3zvjM9vsWuhYduntxiv32ZC3fDV4TkJUNV8y3cZnMKpFLU);
+    opacity: 0.05;
+    pointer-events: none
+    }</style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary selection:text-on-primary min-h-screen relative">
+<div class="fixed inset-0 noise-bg z-[100]"></div>
+<!-- TopNavBar Implementation from JSON -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#0e0e0e]/90 backdrop-blur-md text-[#8ff5ff] font-['Space_Grotesk'] font-bold uppercase tracking-tighter shadow-[0_0_30px_rgba(143,245,255,0.05)] border-b-2 border-[#484847]/20">
+<div class="text-3xl font-black italic tracking-tighter text-[#8ff5ff]">KINETIC_WEAR</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150" href="#">COLLECTIONS</a>
+<a class="text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150" href="#">DROPS</a>
+<a class="text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150" href="#">ARCHIVE</a>
+<a class="text-[#2ff801] border-b-2 border-[#2ff801] pb-1" href="#">CART</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="hover:bg-[#201f1f] p-2 transition-all duration-150 active:scale-95 opacity-80">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button class="hover:bg-[#201f1f] p-2 transition-all duration-150 active:scale-95 opacity-80 relative">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-secondary text-surface-container-lowest text-[10px] w-4 h-4 flex items-center justify-center font-bold">2</span>
+</button>
+</div>
+</nav>
+<main class="pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12 border-l-4 border-primary pl-6">
+<div class="font-label text-primary text-[10px] tracking-[0.3em] mb-2 uppercase">System Status: Active // Transaction_Queue</div>
+<h1 class="text-5xl md:text-7xl font-headline font-black uppercase tracking-tighter glitch-text">Your Cart</h1>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- Item List (8 Cols) -->
+<section class="lg:col-span-8 space-y-4">
+<!-- Cart Item 1 -->
+<div class="relative bg-surface-container-high p-6 flex flex-col md:flex-row gap-6 group transition-all duration-300 hover:bg-surface-container-highest">
+<div class="hud-bracket hud-bracket-tl"></div>
+<div class="hud-bracket hud-bracket-tr"></div>
+<div class="hud-bracket hud-bracket-bl"></div>
+<div class="hud-bracket hud-bracket-br"></div>
+<div class="absolute top-2 right-2 font-label text-[10px] text-primary/40 group-hover:text-primary transition-colors">SN_0921-23</div>
+<div class="w-full md:w-32 h-32 bg-surface-container-low flex-shrink-0 relative overflow-hidden">
+<img alt="Black oversized t-shirt" class="w-full h-full object-cover grayscale brightness-75 hover:grayscale-0 transition-all duration-500" data-alt="studio shot of high-quality black oversized cotton t-shirt with subtle cybernetic print details in neon green and cyan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnqqiAbDJsHbjmzjbkpu1hTOx_t-sx_FLf4yxm_XkZOrBS6dfn47f04L3Uy_I0SES4tUf0PTrSy8Ta8lQS1Xu_KE4EecfxJXzeZCb9HZG6mWXcJJSZBjr8YGkhNtJOZrMIYz_hdgm399bzmXJhWgGDpp4iOsTOoG8s1e77ZRijQq7rfSy2ZLKwLQaLJNgheqBGNgXfWsjVAXJel-9a4YnK1SOFucHV2LzrulDpAxE8ewuiBMfDR-q7KlWd6DRXPgiWRWd5FSs4pBE"/>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-headline font-bold text-primary tracking-tight">Neon Drift Tee</h3>
+<p class="font-label text-on-surface-variant text-xs uppercase tracking-widest mt-1">Size: XL // Color: Obsidian</p>
+</div>
+<div class="text-xl font-headline font-bold text-on-surface">$55.00</div>
+</div>
+<div class="flex justify-between items-center mt-6">
+<div class="flex items-center border border-outline-variant/30 px-3 py-1">
+<button class="text-primary hover:text-secondary p-1"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="mx-4 font-headline font-bold">1</span>
+<button class="text-primary hover:text-secondary p-1"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="font-label text-[10px] text-error hover:text-on-error hover:bg-error px-2 py-1 transition-all uppercase tracking-widest border border-error/30">
+                Discard_Item
+              </button>
+</div>
+</div>
+</div>
+<!-- Cart Item 2 -->
+<div class="relative bg-surface-container-high p-6 flex flex-col md:flex-row gap-6 group transition-all duration-300 hover:bg-surface-container-highest">
+<div class="hud-bracket hud-bracket-tl"></div>
+<div class="hud-bracket hud-bracket-tr"></div>
+<div class="hud-bracket hud-bracket-bl"></div>
+<div class="hud-bracket hud-bracket-br"></div>
+<div class="absolute top-2 right-2 font-label text-[10px] text-primary/40 group-hover:text-primary transition-colors">SN_4420-11</div>
+<div class="w-full md:w-32 h-32 bg-surface-container-low flex-shrink-0 relative overflow-hidden">
+<img alt="Black techwear hoodie" class="w-full h-full object-cover grayscale brightness-75 hover:grayscale-0 transition-all duration-500" data-alt="heavyweight black technical hoodie with neon blue zipper accents and cyberpunk geometric patterns on the sleeves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv5A0QlcaiOo-knDLnZhCJEkt1gPohBuD8_Ko6gkHPy-TY5TbmCIIVqEERwvgWcoQ7lG55n3hVl8s96aYwqizGhD-wqWS9U4oBQ0rYVl_O0iz3NJ_3ZCU3gTmmBVUEjh0yRixGt-ChO6IqcvISX9enGiJlEgK7kAZI5zTrB9UPV8jWnAcaREOg9YYumQIhK50SgAeVkWrBHErC-4myQwBv6a7dWi2teSYvCfZQGs5uuvqFa8bYnt-cYtkI_CTqJBYg71DT2apG3HA"/>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-2xl font-headline font-bold text-primary tracking-tight">Grid Runner Hoodie</h3>
+<p class="font-label text-on-surface-variant text-xs uppercase tracking-widest mt-1">Size: L // Color: Carbon</p>
+</div>
+<div class="text-xl font-headline font-bold text-on-surface">$120.00</div>
+</div>
+<div class="flex justify-between items-center mt-6">
+<div class="flex items-center border border-outline-variant/30 px-3 py-1">
+<button class="text-primary hover:text-secondary p-1"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="mx-4 font-headline font-bold">1</span>
+<button class="text-primary hover:text-secondary p-1"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="font-label text-[10px] text-error hover:text-on-error hover:bg-error px-2 py-1 transition-all uppercase tracking-widest border border-error/30">
+                Discard_Item
+              </button>
+</div>
+</div>
+</div>
+<!-- Recommendations or Promotion (Asymmetric Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+<div class="bg-surface-container-low p-6 border-l-2 border-secondary/50">
+<p class="font-label text-secondary text-[10px] tracking-[.2em] mb-2 uppercase">Unlock_Access</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">Add $25 more for zero-cost standard shipping to your sector.</p>
+</div>
+<div class="bg-primary/5 p-6 border-r-2 border-primary/50 text-right">
+<p class="font-label text-primary text-[10px] tracking-[.2em] mb-2 uppercase">Loyalty_Node</p>
+<p class="text-sm text-on-surface-variant leading-relaxed">KINETIC_WEAR members earn 175 credits on this haul.</p>
+</div>
+</div>
+</section>
+<!-- Order Summary (4 Cols) -->
+<aside class="lg:col-span-4 sticky top-28">
+<div class="bg-surface-container-low p-8 relative border border-outline-variant/10">
+<div class="absolute top-0 right-0 p-2 font-label text-[8px] text-primary/20">SYS_V_4.0.1</div>
+<h2 class="text-3xl font-headline font-black uppercase tracking-tighter mb-8 border-b border-outline-variant pb-4">Checkout Summary</h2>
+<div class="space-y-4 mb-8 font-body">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant uppercase text-xs tracking-widest">Subtotal_Items</span>
+<span class="font-bold">$175.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant uppercase text-xs tracking-widest">Shipping_Fee</span>
+<span class="font-bold">$12.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant uppercase text-xs tracking-widest">Vat_Tax</span>
+<span class="font-bold">$14.50</span>
+</div>
+<div class="pt-4 border-t border-dashed border-outline-variant flex justify-between items-end">
+<span class="text-secondary font-headline font-black text-lg uppercase tracking-widest">Grand Total</span>
+<div class="text-right">
+<span class="block text-secondary font-headline text-4xl font-black glitch-text">$201.50</span>
+<span class="text-[10px] text-secondary/50 font-label">ESTIMATED_SYNC_COMPLETE</span>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<button class="w-full bg-primary text-on-primary py-5 font-headline font-black text-xl uppercase tracking-tighter hover:bg-primary-fixed transition-all active:scale-[0.98] relative group">
+<span class="relative z-10">Proceed to Checkout</span>
+<div class="absolute inset-0 bg-secondary opacity-0 group-hover:opacity-20 transition-opacity"></div>
+<div class="absolute top-0 right-0 h-full w-2 bg-secondary/30 transform translate-x-4 opacity-0 group-hover:opacity-100 transition-all"></div>
+</button>
+<div class="flex flex-col gap-2">
+<input class="w-full bg-surface-container-lowest border-none border-b-2 border-outline-variant text-primary font-label text-xs tracking-widest focus:ring-0 focus:border-primary placeholder:text-outline/50 transition-all px-4 py-3" placeholder="ENTER_PROMO_CODE" type="text"/>
+<button class="text-on-surface-variant hover:text-primary text-[10px] font-label uppercase tracking-widest text-left pl-2">Apply_Discount_Signal</button>
+</div>
+</div>
+<div class="mt-12 flex justify-center gap-6 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+<span class="material-symbols-outlined text-2xl">credit_card</span>
+<span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+<span class="material-symbols-outlined text-2xl">currency_bitcoin</span>
+</div>
+</div>
+<p class="mt-6 text-[9px] font-label text-on-surface-variant leading-relaxed text-center uppercase tracking-[0.2em] px-4">
+          All transactions are encrypted via end-to-end neural link protocols. No biometric data is stored without explicit hardware consent.
+        </p>
+</aside>
+</div>
+</main>
+<!-- Footer Implementation from JSON -->
+<footer class="w-full border-t-2 border-[#484847]/20 bg-[#000000] flex flex-col md:flex-row justify-between items-center px-12 py-16 gap-8 text-[#8ff5ff] font-['Inter'] text-[10px] tracking-[0.2em] uppercase">
+<div class="text-sm font-bold text-[#8ff5ff]">KINETIC_WEAR</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all hover:tracking-[0.3em]" href="#">SHIPPING</a>
+<a class="text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all hover:tracking-[0.3em]" href="#">RETURNS</a>
+<a class="text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all hover:tracking-[0.3em]" href="#">PRIVACY</a>
+<a class="text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all hover:tracking-[0.3em]" href="#">CONTACT</a>
+</div>
+<div class="text-center md:text-right">
+      ©2024 NEON BRUTALIST CLOTHING. SYSTEM_STATUS: STABLE
+    </div>
+</footer>
+</body></html>

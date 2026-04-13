@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#adaaaa",
+                    "tertiary-fixed-dim": "#ff75a0",
+                    "secondary-fixed-dim": "#2be800",
+                    "outline": "#767575",
+                    "on-error": "#490006",
+                    "on-tertiary-container": "#000000",
+                    "error-dim": "#d7383b",
+                    "background": "#0e0e0e",
+                    "secondary-container": "#106e00",
+                    "primary-fixed-dim": "#00deec",
+                    "tertiary-container": "#ff067f",
+                    "surface-container": "#1a1919",
+                    "surface-container-high": "#201f1f",
+                    "on-secondary-fixed": "#064200",
+                    "secondary": "#2ff801",
+                    "on-primary-fixed-variant": "#005e64",
+                    "tertiary-dim": "#e30071",
+                    "primary-fixed": "#00eefc",
+                    "on-secondary-fixed-variant": "#0d6200",
+                    "secondary-fixed": "#2ff801",
+                    "on-primary": "#005d63",
+                    "on-error-container": "#ffa8a3",
+                    "inverse-primary": "#006a71",
+                    "surface-bright": "#2c2c2c",
+                    "surface-tint": "#8ff5ff",
+                    "tertiary-fixed": "#ff8eae",
+                    "error-container": "#9f0519",
+                    "on-secondary": "#0b5800",
+                    "inverse-on-surface": "#565555",
+                    "surface-container-lowest": "#000000",
+                    "outline-variant": "#484847",
+                    "primary-container": "#00eefc",
+                    "secondary-dim": "#2be800",
+                    "surface": "#0e0e0e",
+                    "on-tertiary-fixed": "#380017",
+                    "on-background": "#ffffff",
+                    "surface-variant": "#262626",
+                    "on-primary-container": "#005359",
+                    "surface-container-highest": "#262626",
+                    "surface-dim": "#0e0e0e",
+                    "on-primary-fixed": "#003f43",
+                    "surface-container-low": "#131313",
+                    "tertiary": "#ff6b9b",
+                    "on-surface": "#ffffff",
+                    "on-tertiary": "#47001f",
+                    "on-tertiary-fixed-variant": "#760037",
+                    "on-secondary-container": "#e7ffd9",
+                    "inverse-surface": "#fcf9f8",
+                    "error": "#ff716c",
+                    "primary-dim": "#00deec",
+                    "primary": "#8ff5ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Space Grotesk"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0e0e0e;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            background-image: radial-gradient(#1a1a1a 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .neon-glitch-border {
+            position: relative;
+        }
+        .neon-glitch-border::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid rgba(143, 245, 255, 0.1);
+            pointer-events: none;
+        }
+        .product-card:hover .neon-glitch-border::after {
+            border-color: #8ff5ff;
+            box-shadow: 0 0 15px rgba(143, 245, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar Shell -->
+<nav class="fixed top-0 w-full z-50 bg-[#0e0e0e]/80 backdrop-blur-xl border-b border-[#484847]/20 flex justify-between items-center px-6 py-4 shadow-[0_0_20px_rgba(143,245,255,0.1)]">
+<div class="text-2xl font-bold tracking-tighter text-[#8ff5ff] italic">NEON_BRUTAL</div>
+<div class="hidden md:flex gap-8 font-['Space_Grotesk'] uppercase tracking-[0.1em] text-sm">
+<a class="text-[#2ff801] border-b-2 border-[#2ff801] pb-1 hover:text-[#2ff801] transition-colors duration-300" href="#">DROP_01</a>
+<a class="text-[#8ff5ff]/70 hover:text-[#2ff801] transition-colors duration-300" href="#">ARCHIVE</a>
+<a class="text-[#8ff5ff]/70 hover:text-[#2ff801] transition-colors duration-300" href="#">CORE</a>
+<a class="text-[#8ff5ff]/70 hover:text-[#2ff801] transition-colors duration-300" href="#">INTEL</a>
+</div>
+<div class="flex items-center gap-6 text-[#8ff5ff]">
+<button class="active:scale-95 transition-transform"><span class="material-symbols-outlined" data-icon="search">search</span></button>
+<button class="active:scale-95 transition-transform"><span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span></button>
+<button class="active:scale-95 transition-transform"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span></button>
+</div>
+</nav>
+<main class="flex-grow pt-24 pb-12 px-6 max-w-7xl mx-auto w-full">
+<!-- Hero/Header Section -->
+<header class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<p class="font-label text-[10px] tracking-[0.3em] text-primary mb-2">SYSTEM_UPDATE // 2024.03</p>
+<h1 class="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none">CORE_COLLECTION</h1>
+</div>
+<!-- Filter Tabs -->
+<div class="flex gap-4 font-label text-xs tracking-widest">
+<button class="px-6 py-2 bg-primary text-on-primary font-bold">ALL_GEAR</button>
+<button class="px-6 py-2 border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary transition-colors">DROPS</button>
+<button class="px-6 py-2 border border-outline-variant text-on-surface-variant hover:border-secondary hover:text-secondary transition-colors">ARCHIVE</button>
+</div>
+</div>
+</header>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="VECTOR TEE" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="Black high-quality oversized t-shirt with a glowing cyan geometric vector graphic on the chest, neon lighting, brutalist studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhgCXZpSVN8fxTR3qVTg9U1WtamfjoK4EdnRoh-6hLuiA7Lsnh2c2ohCK4yUC_85VgwN84bZVtHrrVRF-pvIZPa5w4iJl9sFtgZo0W6Pxp5Fr60-7OdoWsyNBx2bW4l8NiqqBdFG2LuFZz4d0kFc4OA-aX3PrB4xFQMBG4y97aLtrucr471P-b36880KEodN3UyGw1Z3HN22-NaYjRBw3xKsf8hvD1fN7xQXXMxkhod0WbwCvhFPE17XL5M-hjBpElemTeLo-20kA"/>
+<div class="absolute top-4 right-4 bg-background px-2 py-1 text-[10px] font-label tracking-widest text-primary border border-primary/30">
+                        NEW_MODEL
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">VECTOR TEE</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">SERIES_A // 001</p>
+</div>
+<div class="text-xl font-bold text-secondary">$65.00</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="GHOST SHIRT" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="White premium t-shirt with a glitchy translucent typography design, hyper-detailed fabric texture, neon green rim lighting, cyberpunk aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF8y2b7SlnPhd_0-xkC2gnIUe_YNc3Iv7LTjXmNkXPkzsdBk1rICpdAb9ph6ookJ7eEQPWG7NG-ZyytxlIHzP7tLriSaAFxjQI65V8qIBMMwcbgSZh9GFnYEvwBhU70EGM5V5CLCLtZQCmbur2k6ZPnfnfXf8xs0uEd8oI3tYX1o5vinyBRK046yWaiCsUus0L6DS7vkJGg0gWA5fwvgHunDbcCXpDgK5A9ZbEZxeJYFvi8PLAKA1w0OaKck2bX7UkQML8dxGKiCc"/>
+<div class="absolute bottom-4 left-4 bg-secondary text-on-secondary px-2 py-1 text-[10px] font-label tracking-widest font-bold">
+                        LIMITED_RUN
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">GHOST SHIRT</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">SERIES_B // 024</p>
+</div>
+<div class="text-xl font-bold text-secondary">$82.00</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="NEON LOGIC TEE" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="Oversized heavy cotton t-shirt with digital interface patterns and glitch motifs in electric blue, cinematic lighting, dark industrial background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2-hhgleTwpsmDqDy5iE30fn1Vh7joloH_jZHwIwOfT7HMPRlqFMyGbL88W2u-g8MxObjU2S-RaVvQqw2BHma4DTNvb-MsMYnAgTN_5kxLZ6DAvLBlBeGFc3QcaBFXRaUOjDh4PIxmzmWXoj3W4FRAAUJiemHlZzk6-QqgPD2CCrLirM8dk0D82EorHk_t7rcOKrCys5GQhRJTaVaJfPl5d4DPKxKH7kzh4c78I6cCJc_UHfbRO-oxVqZB2krtzw4ebR6nl_qtjmw"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">NEON LOGIC TEE</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">CORE_UNIT // 009</p>
+</div>
+<div class="text-xl font-bold text-secondary">$55.00</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="KINETIC_SHIELD" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="Technical t-shirt with reinforced stitching details and reflective neon accents, high-contrast urban fashion photography, obsidian tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiq-60-T1XgtdbAfrT_Au5UXNs55ZAbIDrXH0ukNjB8Kkrxn_WHnSltmVbLMKv2J1wZKpKPEkaWZV5CPBPqEyVslhFLNOdcIGqxQ-D2LD7PmXAmdrtbUfHhuZIVquZJD5GEU_1x9542yL-G3G793u-OmRZoe5tFA9CSJkvmHD1sfdSvYh0i2BGC5Bxv6n8shKmcGug7rDDzhVVcZA6JYF8_QVkCDn22cPXv7PpfuLQxNRrD7hedDWzw_PwN1UHi63MyHcFzhGNsnE"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">KINETIC_SHIELD</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">TECH_SPEC // 102</p>
+</div>
+<div class="text-xl font-bold text-secondary">$90.00</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="VOID_OPERATOR" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="Deep charcoal t-shirt featuring a minimal neon circle glitch graphic, moody dramatic shadows, vaporwave digital aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1JoksY44pI3y_1hNPdCAaf8AfPWnGEfI1ufcFkd09dH9JexPg_278NH4qUhvC6wfojASSJGDu37Up9-Y6MFxfYGG2PlVcf1xfV-OYwEl5TjGNXsjimbQWS0lWkEoHPAAAFnIGVEa6x23J30n3NVwOZrj0mki3sZg4UX_uNwwSDTwRQpFS1hfD3_TkE-oNgbTClGFeFWOe2ToxFZbdLIIbllwSWvWFHJfm1uR7HjYw4G2oH6uG68b8bmWrxfduJprRLAWaEaT2DmI"/>
+<div class="absolute top-4 left-4 bg-tertiary text-on-tertiary px-2 py-1 text-[10px] font-label tracking-widest font-bold">
+                        SOLD_OUT
+                    </div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">VOID_OPERATOR</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">SERIES_Z // 999</p>
+</div>
+<div class="text-xl font-bold text-outline">$70.00</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="product-card group cursor-pointer">
+<div class="relative aspect-[4/5] bg-surface-container-low mb-4 neon-glitch-border overflow-hidden">
+<img alt="SYNTH_WAVE_01" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" data-alt="Minimalist street-style t-shirt with a vibrant pink and cyan glitch logo, sleek studio lighting, futuristic techwear vibe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCx-uJr5Skf6WHrUkOSiOw-ZFThrRbdV98rVlup4KHHGpAO30jRyrIJyLeN-FMvqCwN_chQmDFMWoLueKCJKlZO1XnuetGPZdHz1-GFthS5yMXGp-q-bRFZwlytQjLbr6Qu6HW6oN9tvyl6OdH1ekZH_GbWr7uNNiyeHE3331NBj-lp083TSZOf3hUPnoinUJRmnQXfQ__Q0RGOkW75SmDiFp4NbCq46ZFcSBu0NbN4E6rNYtWEav9HHGjOIvpBHUHgfTcy1iuOLOc"/>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold tracking-tight uppercase group-hover:text-primary transition-colors">SYNTH_WAVE_01</h3>
+<p class="text-xs text-on-surface-variant font-label mt-1">SERIES_A // 005</p>
+</div>
+<div class="text-xl font-bold text-secondary">$60.00</div>
+</div>
+</div>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-20 flex justify-center">
+<button class="group flex flex-col items-center gap-4">
+<span class="font-label text-xs tracking-[0.4em] uppercase text-on-surface-variant group-hover:text-primary transition-colors">LOAD_MORE_ASSETS</span>
+<div class="h-[1px] w-40 bg-outline-variant relative overflow-hidden">
+<div class="absolute inset-0 bg-primary -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+</div>
+</button>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 border-t border-[#484847]/20 flex flex-col items-center gap-6 mt-auto bg-[#000000]">
+<div class="text-[#8ff5ff] text-xl font-bold tracking-tighter italic">NEON_BRUTAL</div>
+<div class="flex gap-8 font-['Inter'] text-[10px] tracking-[0.2em] uppercase">
+<a class="text-[#8ff5ff]/40 hover:text-[#8ff5ff] transition-opacity" href="#">PRIVACY_PROT</a>
+<a class="text-[#8ff5ff]/40 hover:text-[#8ff5ff] transition-opacity" href="#">TERMS_OF_ENGAGEMENT</a>
+<a class="text-[#8ff5ff]/40 hover:text-[#8ff5ff] transition-opacity" href="#">DATA_LOGS</a>
+</div>
+<div class="text-[#8ff5ff]/40 font-['Inter'] text-[10px] tracking-[0.2em] uppercase">
+            ©2024 KINETIC_OVERRIDE_LABS // ALL_RIGHTS_REDACTED
+        </div>
+</footer>
+</body></html>

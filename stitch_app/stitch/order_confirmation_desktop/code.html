@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KINETIC_WEAR | ORDER_CONFIRMED</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#0e0e0e",
+                        "surface-container-low": "#131313",
+                        "primary-fixed": "#00eefc",
+                        "on-primary-container": "#005359",
+                        "inverse-primary": "#006a71",
+                        "on-primary-fixed-variant": "#005e64",
+                        "tertiary-container": "#ff067f",
+                        "surface": "#0e0e0e",
+                        "surface-tint": "#8ff5ff",
+                        "on-tertiary-fixed": "#380017",
+                        "error": "#ff716c",
+                        "on-tertiary": "#47001f",
+                        "on-surface-variant": "#adaaaa",
+                        "tertiary-fixed-dim": "#ff75a0",
+                        "on-secondary-fixed": "#064200",
+                        "on-error": "#490006",
+                        "primary-fixed-dim": "#00deec",
+                        "surface-container-high": "#201f1f",
+                        "error-container": "#9f0519",
+                        "on-primary": "#005d63",
+                        "on-secondary": "#0b5800",
+                        "surface-bright": "#2c2c2c",
+                        "primary": "#8ff5ff",
+                        "on-secondary-container": "#e7ffd9",
+                        "error-dim": "#d7383b",
+                        "primary-container": "#00eefc",
+                        "surface-container": "#1a1919",
+                        "primary-dim": "#00deec",
+                        "secondary": "#2ff801",
+                        "inverse-surface": "#fcf9f8",
+                        "secondary-dim": "#2be800",
+                        "outline": "#767575",
+                        "on-tertiary-container": "#000000",
+                        "on-tertiary-fixed-variant": "#760037",
+                        "tertiary-dim": "#e30071",
+                        "background": "#0e0e0e",
+                        "outline-variant": "#484847",
+                        "on-primary-fixed": "#003f43",
+                        "surface-container-lowest": "#000000",
+                        "tertiary": "#ff6b9b",
+                        "surface-container-highest": "#262626",
+                        "on-surface": "#ffffff",
+                        "secondary-fixed-dim": "#2be800",
+                        "secondary-container": "#106e00",
+                        "on-background": "#ffffff",
+                        "surface-variant": "#262626",
+                        "tertiary-fixed": "#ff8eae",
+                        "on-secondary-fixed-variant": "#0d6200",
+                        "on-error-container": "#ffa8a3",
+                        "inverse-on-surface": "#565555",
+                        "secondary-fixed": "#2ff801"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Space Grotesk"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glitch-text-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-shadow-secondary {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            z-index: -1;
+            color: #2ff801;
+        }
+        .glitch-shadow-tertiary {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            z-index: -2;
+            color: #ff6b9b;
+        }
+        .noise-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .bracket-corner {
+            width: 12px;
+            height: 12px;
+            border-color: #8ff5ff;
+            position: absolute;
+        }
+        .bracket-tl { top: 12px; left: 12px; border-top-width: 2px; border-left-width: 2px; }
+        .bracket-tr { top: 12px; right: 12px; border-top-width: 2px; border-right-width: 2px; }
+        .bracket-bl { bottom: 12px; left: 12px; border-bottom-width: 2px; border-left-width: 2px; }
+        .bracket-br { bottom: 12px; right: 12px; border-bottom-width: 2px; border-right-width: 2px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-secondary selection:text-surface-container-lowest overflow-x-hidden">
+<div class="noise-overlay fixed inset-0 z-[100]"></div>
+<!-- Navigation Suppressed as per Shell Visibility Rules for Transactional Confirmation screens -->
+<!-- Re-rendering a simplified version for brand continuity as requested 'Consistent top navigation' -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#0e0e0e]/90 backdrop-blur-md border-b-2 border-[#484847]/20 shadow-[0_0_30px_rgba(143,245,255,0.05)]">
+<div class="text-3xl font-black italic tracking-tighter text-[#8ff5ff] font-['Space_Grotesk']">KINETIC_WEAR</div>
+<div class="hidden md:flex gap-8 items-center">
+<span class="font-['Space_Grotesk'] font-bold uppercase tracking-tighter text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150 cursor-pointer">COLLECTIONS</span>
+<span class="font-['Space_Grotesk'] font-bold uppercase tracking-tighter text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150 cursor-pointer">DROPS</span>
+<span class="font-['Space_Grotesk'] font-bold uppercase tracking-tighter text-[#8ff5ff]/60 hover:text-[#8ff5ff] transition-all duration-150 cursor-pointer">ARCHIVE</span>
+<div class="flex items-center gap-6 ml-6">
+<span class="material-symbols-outlined text-[#8ff5ff] cursor-pointer hover:scale-110 transition-transform">account_circle</span>
+<span class="material-symbols-outlined text-[#8ff5ff] cursor-pointer hover:scale-110 transition-transform">shopping_bag</span>
+</div>
+</div>
+</nav>
+<main class="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
+<!-- Left: High Impact Message -->
+<div class="w-full lg:w-3/5 space-y-12">
+<section class="relative p-12 bg-surface-container-low border-l-4 border-secondary">
+<div class="font-label text-xs tracking-[0.3em] text-secondary mb-4">TRANSACTION_SUCCESS // STATUS: COMPLETE</div>
+<h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-8">
+<div class="glitch-text-wrapper">
+                        ORDER_LOCKED
+                        <span class="glitch-shadow-secondary select-none">ORDER_LOCKED</span>
+<span class="glitch-shadow-tertiary select-none">ORDER_LOCKED</span>
+</div>
+</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant max-w-xl font-light leading-relaxed">
+                    System signal confirmed. Your kinetic gear is currently being processed for uplink. Welcome to the collective.
+                </p>
+<div class="mt-12 flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-10 py-4 font-bold tracking-widest text-sm uppercase hover:shadow-[0_0_20px_rgba(143,245,255,0.4)] transition-all active:scale-95 group relative">
+<span>BACK TO HUB</span>
+<div class="absolute -right-2 -bottom-2 w-full h-full border border-primary group-hover:right-0 group-hover:bottom-0 transition-all"></div>
+</button>
+<button class="border-2 border-outline-variant text-on-surface-variant px-10 py-4 font-bold tracking-widest text-sm uppercase hover:border-secondary hover:text-secondary transition-all">
+                        VIEW_INVOICE
+                    </button>
+</div>
+</section>
+<!-- Status Details Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-high p-8 relative overflow-hidden group">
+<div class="bracket-corner bracket-tl"></div>
+<div class="bracket-corner bracket-tr"></div>
+<div class="bracket-corner bracket-bl"></div>
+<div class="bracket-corner bracket-br"></div>
+<div class="font-label text-[10px] tracking-widest text-primary mb-4">ESTIMATED_UPLINK</div>
+<div class="text-4xl font-bold text-on-surface">48_HOURS</div>
+<div class="mt-2 text-on-surface-variant font-label text-xs">Standard courier protocol engaged.</div>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-9xl">local_shipping</span>
+</div>
+</div>
+<div class="bg-surface-container-high p-8 relative overflow-hidden group">
+<div class="bracket-corner bracket-tl"></div>
+<div class="bracket-corner bracket-tr"></div>
+<div class="bracket-corner bracket-bl"></div>
+<div class="bracket-corner bracket-br"></div>
+<div class="font-label text-[10px] tracking-widest text-tertiary mb-4">IDENT_NUMBER</div>
+<div class="text-4xl font-bold text-on-surface">#KNTC-99821X</div>
+<div class="mt-2 text-on-surface-variant font-label text-xs">Keep this signature for tracking.</div>
+<div class="absolute right-[-10px] bottom-[-10px] opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-9xl">qr_code_2</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Order Summary Sidebar -->
+<aside class="w-full lg:w-2/5 bg-surface-container-low border-2 border-outline-variant/10 p-10 relative">
+<div class="font-label text-xs tracking-widest text-primary mb-10 flex justify-between items-center">
+<span>ORDER_MANIFEST</span>
+<span class="text-on-surface-variant">V.4.2</span>
+</div>
+<div class="space-y-8 mb-12">
+<!-- Item 1 -->
+<div class="flex gap-6 items-center">
+<div class="w-24 h-24 bg-surface-container-highest shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="high quality studio photo of a black cyberpunk t-shirt with neon cyan glowing circuit patterns and oversized fit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcanwmZ_vcFshXjS9T-2V0N1plZnUohZNMj5v2ccvsupYiV-m4cSW_eZIpwtiXie6f293vMqD0XqDITaTQWrl9Ji1ulYoNg3JA3dHZZfc2yP2Qg-Fe-pVf6KdsFXD0YULcgPKfH7M5T0Na0r5DqM1AHrPVJbWn2ZQsi7sgurD0yqmI71ijVLxLDTuZUi9iRKpQuM-KoiDb3rAU8Z6rx6udBHmG_ayPMyxQoTED5-Hbif_f-FWZGX4Bdl5sxT289BehxkUhuvTCdEw"/>
+</div>
+<div class="flex-1">
+<div class="font-bold text-lg tracking-tight">KINETIC_CORE_TEE</div>
+<div class="text-xs font-label text-on-surface-variant uppercase tracking-widest">SIZE: XL // QTY: 01</div>
+<div class="text-primary mt-2 font-bold">$72.00</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex gap-6 items-center">
+<div class="w-24 h-24 bg-surface-container-highest shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="front view of a high-tech white streetwear t-shirt with minimal black technical typography and data noise graphics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvbFlpMVpjGzLA9wZW4D2dCeznr5UxunH1TpLbKrCkYuUPY_J6t2VRNZc0zTku1if4GP38o2m-z9fx0aEYuuoOkDURXhejnoOOLo9XdIoopVwGdh2sQxg5rYop2DIFlEnRLV4Z4TdPP0ptlrB1r8MNJqBZ7Misw8R45jXdc-yANzdhJ0KbZaRKgp4OjNfUdcILysa-iCeHAByEOXOb_Xwtb6d_-AdcKu4ShLUoHUe2YvKfLiTuly-Y9gJeQcJ3NXp4iHwW0zRKCX4"/>
+</div>
+<div class="flex-1">
+<div class="font-bold text-lg tracking-tight">DATA_FLOW_LINER</div>
+<div class="text-xs font-label text-on-surface-variant uppercase tracking-widest">SIZE: L // QTY: 01</div>
+<div class="text-primary mt-2 font-bold">$55.00</div>
+</div>
+</div>
+</div>
+<div class="border-t-2 border-outline-variant/20 pt-8 space-y-4">
+<div class="flex justify-between font-label text-sm uppercase tracking-widest">
+<span class="text-on-surface-variant">SUBTOTAL</span>
+<span>$127.00</span>
+</div>
+<div class="flex justify-between font-label text-sm uppercase tracking-widest">
+<span class="text-on-surface-variant">LOGISTICS_FEE</span>
+<span>$12.00</span>
+</div>
+<div class="flex justify-between font-label text-sm uppercase tracking-widest text-secondary">
+<span>NEON_DISCOUNT [WELCOME_USER]</span>
+<span>-$25.00</span>
+</div>
+<div class="flex justify-between items-end pt-6">
+<span class="font-bold text-xl tracking-tighter uppercase">TOTAL_COST</span>
+<div class="text-right">
+<div class="text-3xl font-black text-secondary tracking-tighter">$114.00</div>
+<div class="text-[10px] font-label text-on-surface-variant tracking-[0.2em]">TAXES_INCLUDED</div>
+</div>
+</div>
+</div>
+<!-- Decorative Data Noise -->
+<div class="mt-12 opacity-20 font-label text-[10px] leading-tight text-on-surface-variant break-all">
+                SECURE_ENCRYPTION_HASH: 0x8ff5ff2ff801ff6b9b00eefc...
+                LATENCY_CHECK: 14MS // CLUSTER_A_STABLE // TIMESTAMP: 2024.05.21.14:22:01
+            </div>
+</aside>
+</main>
+<footer class="w-full border-t-2 border-[#484847]/20 bg-[#000000]">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 gap-8 max-w-7xl mx-auto">
+<div class="text-sm font-bold text-[#8ff5ff] font-['Inter'] uppercase tracking-[0.2em]">KINETIC_WEAR</div>
+<div class="flex flex-wrap justify-center gap-10">
+<a class="text-[10px] tracking-[0.2em] uppercase font-['Inter'] text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all" href="#">SHIPPING</a>
+<a class="text-[10px] tracking-[0.2em] uppercase font-['Inter'] text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all" href="#">RETURNS</a>
+<a class="text-[10px] tracking-[0.2em] uppercase font-['Inter'] text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all" href="#">PRIVACY</a>
+<a class="text-[10px] tracking-[0.2em] uppercase font-['Inter'] text-[#8ff5ff]/40 hover:text-[#2ff801] transition-all" href="#">CONTACT</a>
+</div>
+<div class="text-[10px] tracking-[0.2em] uppercase font-['Inter'] text-[#8ff5ff]/40">
+                ©2024 NEON BRUTALIST CLOTHING. SYSTEM_STATUS: STABLE
+            </div>
+</div>
+</footer>
+</body></html>
