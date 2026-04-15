@@ -42,9 +42,12 @@ export default function CartPage() {
   const shipping = subtotal > 0 ? 12.0 : 0;
   const tax = subtotal * 0.082;
   const total = subtotal + shipping + tax;
+  const hasValidEmail = email.trim().length > 3 && email.includes("@");
+  const hasPaymentIdentity = paymentMethod === "wallet" || cardholder.trim().length > 1;
+  const canSubmitPayment = items.length > 0 && hasValidEmail && hasPaymentIdentity && !isProcessing;
 
   const handlePayment = () => {
-    if (items.length === 0) return;
+    if (!canSubmitPayment) return;
 
     setIsProcessing(true);
     const order = createOrder(items, paymentMethod);
@@ -54,9 +57,9 @@ export default function CartPage() {
   };
 
   return (
-    <main className="pt-32 pb-20 px-12 max-w-7xl mx-auto">
+    <main className="pt-28 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <header className="mb-12 border-l-4 border-primary pl-6">
-        <div className="font-label text-primary text-[10px] tracking-[0.3em] mb-2 uppercase">System Status: Active // Transaction_Queue</div>
+        <div className="font-label text-primary text-[10px] tracking-[0.3em] mb-2 uppercase">Checkout</div>
         <h1 className="text-5xl md:text-7xl font-headline font-black uppercase tracking-tighter italic text-zinc-100">Your Cart</h1>
       </header>
 
@@ -121,7 +124,7 @@ export default function CartPage() {
                       className="font-label text-[10px] text-error hover:text-white hover:bg-error px-2 py-1 transition-all uppercase tracking-widest border border-error/30"
                       type="button"
                     >
-                      Discard_Item
+                      Remove item
                     </button>
                   </div>
                 </div>
@@ -131,11 +134,11 @@ export default function CartPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
             <div className="bg-surface-container-low p-6 border-l-2 border-secondary/50">
-              <p className="font-label text-secondary text-[10px] tracking-[.2em] mb-2 uppercase font-bold">Unlock_Access</p>
+              <p className="font-label text-secondary text-[10px] tracking-[.2em] mb-2 uppercase font-bold">Shipping</p>
               <p className="text-sm text-zinc-500 leading-relaxed font-label uppercase text-[11px] tracking-tight">Add more for zero-cost standard shipping to your sector.</p>
             </div>
             <div className="bg-primary/5 p-6 border-r-2 border-primary/50 text-right">
-              <p className="font-label text-primary text-[10px] tracking-[.2em] mb-2 uppercase font-bold">Loyalty_Node</p>
+              <p className="font-label text-primary text-[10px] tracking-[.2em] mb-2 uppercase font-bold">Rewards</p>
               <p className="text-sm text-zinc-500 leading-relaxed font-label uppercase text-[11px] tracking-tight text-right">KINETIC_WEAR members earn credits on this haul.</p>
             </div>
           </div>
@@ -148,23 +151,23 @@ export default function CartPage() {
 
             <div className="space-y-4 mb-8">
               <div className="flex justify-between items-center text-xs font-label uppercase tracking-widest text-zinc-400">
-                <span>Subtotal_Items</span>
+                <span>Subtotal</span>
                 <span className="font-bold text-zinc-100">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-xs font-label uppercase tracking-widest text-zinc-400">
-                <span>Shipping_Fee</span>
+                <span>Shipping</span>
                 <span className="font-bold text-zinc-100">${shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-xs font-label uppercase tracking-widest text-zinc-400">
-                <span>Vat_Tax</span>
+                <span>Tax</span>
                 <span className="font-bold text-zinc-100">${tax.toFixed(2)}</span>
               </div>
 
               <div className="pt-4 border-t border-dashed border-zinc-800 flex justify-between items-end mt-6">
-                <span className="text-secondary font-headline font-black text-lg uppercase tracking-widest italic">Grand Total</span>
+                <span className="text-secondary font-headline font-black text-lg uppercase tracking-widest italic">Total</span>
                 <div className="text-right">
                   <span className="block text-secondary font-headline text-4xl font-black italic tracking-tighter">${total.toFixed(2)}</span>
-                  <span className="text-[10px] text-secondary/50 font-label uppercase tracking-widest mt-1">ESTIMATED_SYNC_COMPLETE</span>
+                  <span className="text-[10px] text-secondary/50 font-label uppercase tracking-widest mt-1">Ready to pay</span>
                 </div>
               </div>
             </div>
@@ -206,12 +209,18 @@ export default function CartPage() {
 
               <button
                 onClick={handlePayment}
-                disabled={items.length === 0 || isProcessing}
+                disabled={!canSubmitPayment}
                 className="w-full bg-primary text-on-primary py-5 font-headline font-black text-xl uppercase tracking-tighter hover:bg-primary-fixed transition-all active:scale-[0.98] flex items-center justify-center relative overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <span className="relative z-10 italic">{isProcessing ? "PROCESSING..." : `PAY ${total.toFixed(2)}`}</span>
+                <span className="relative z-10 italic">{isProcessing ? "PROCESSING..." : `CELO MINI PAY ${total.toFixed(2)}`}</span>
                 <div className="absolute inset-0 bg-secondary opacity-0 group-hover:opacity-20 transition-opacity"></div>
               </button>
+
+              {!canSubmitPayment && (
+                <p className="text-[9px] font-label text-zinc-500 leading-relaxed uppercase tracking-[0.2em] px-1">
+                  Enter a valid email{paymentMethod === "card" ? " and cardholder name" : ""} to continue.
+                </p>
+              )}
 
               <p className="text-[9px] font-label text-zinc-600 leading-relaxed uppercase tracking-[0.2em] px-1">
                 Secure payment handoff captures your selected items, then opens the address screen to finish delivery details.

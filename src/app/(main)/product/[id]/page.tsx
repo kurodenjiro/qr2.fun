@@ -12,18 +12,29 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!design) notFound();
   const style = await db.select().from(artStyles).where(eq(artStyles.id, design.styleId)).get();
   const styleName = style?.name ?? design.styleId;
-  const styleImage = style?.imageUrl || (design.type === "hoodie" ? "/images/hoodie-mockup.jpg" : "/images/tshirt-mockup.png");
+  const baseMockupImage = design.type === "hoodie" ? "/images/hoodie-mockup.jpg" : "/images/tshirt-mockup.png";
   const price = design.type === "hoodie" ? 120 : 72;
 
-  let dna: { traits?: Array<{ label: string; value: number }>; metadata?: { node?: string } } = {};
+  let dna: {
+    traits?: Array<{ label: string; value: number }>;
+    metadata?: { node?: string };
+    generatedImageUrl?: string;
+    profileImageUrl?: string;
+    qrCodeDataUrl?: string;
+    amount?: number;
+    price?: number;
+  } = {};
   try {
     dna = JSON.parse(design.dnaData);
   } catch {
     dna = {};
   }
+  const printImage = dna.generatedImageUrl || "/images/tshirt-mockup.png";
+  const displayPrice = typeof dna.price === "number" && Number.isFinite(dna.price) ? dna.price : price;
+  const initialAmount = typeof dna.amount === "number" && Number.isFinite(dna.amount) ? Math.max(1, Math.floor(dna.amount)) : 1;
   
   return (
-    <main className="flex-grow container mx-auto px-12 py-32 max-w-7xl">
+    <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* Product Gallery */}
         <div className="lg:col-span-7 flex flex-col gap-4">
@@ -34,11 +45,30 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary/40"></div>
              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40"></div>
 
-            <img 
-              alt={styleName}
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" 
-              src={styleImage}
+            <img
+              alt={`${design.type} mockup`}
+              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+              src={baseMockupImage}
             />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className={`relative ${design.type === "hoodie" ? "w-56 h-80 mt-6" : "w-64 h-96"} opacity-90 mix-blend-lighten border-2 border-primary/30`}>
+                <img
+                  alt={styleName}
+                  className="w-full h-full object-cover"
+                  src={printImage}
+                />
+                {dna.profileImageUrl && (
+                  <div className="absolute top-4 left-4 w-14 h-14 rounded-full overflow-hidden border-2 border-primary bg-black shadow-lg">
+                    <img src={dna.profileImageUrl} alt="Twitter avatar" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                {dna.qrCodeDataUrl && (
+                  <div className="absolute bottom-4 right-4 w-16 h-16 bg-white p-1 border border-black/50 shadow-2xl mix-blend-screen opacity-90">
+                    <img src={dna.qrCodeDataUrl} alt="QR Link" className="w-full h-full invert" />
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="absolute top-4 left-4 p-2 bg-black/80 backdrop-blur-md border border-primary/20">
               <span className="font-label text-[10px] tracking-[0.2em] text-primary uppercase">SYS_VER_4.02</span>
             </div>
@@ -71,7 +101,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               {styleName.replace(/-/g, "_")}
             </h1>
             <div className="flex items-center gap-4 mt-2">
-              <span className="text-3xl font-headline font-bold text-primary">${price.toFixed(2)}</span>
+              <span className="text-3xl font-headline font-bold text-primary">${displayPrice.toFixed(2)}</span>
               <div className="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/20">
                 <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></div>
                 <span className="font-label text-[10px] tracking-[0.1em] text-secondary font-bold uppercase">IN STOCK</span>
@@ -106,7 +136,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="flex flex-col gap-2">
               <div className="flex justify-between font-label text-[10px] tracking-[0.1em] text-zinc-500 uppercase">
                 <span>Select Size</span>
-                <button className="text-primary hover:underline transition-all">Size Guide</button>
+                <button className="text-primary hover:underline transition-all">Size guide</button>
               </div>
               <div className="grid grid-cols-5 gap-2">
                 {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
@@ -136,12 +166,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 type: design.type,
                 styleId: design.styleId,
                 handle: `@${design.handle}`,
-                image: styleImage,
-                price,
+                image: printImage,
+                price: displayPrice,
+                quantity: initialAmount,
               }}
             />
             <button className="w-full border-2 border-zinc-800 py-4 text-zinc-400 font-headline font-bold text-sm tracking-widest uppercase hover:border-secondary hover:text-secondary transition-all">
-              ADD TO WISHLIST
+              Save to Wishlist
             </button>
           </div>
 

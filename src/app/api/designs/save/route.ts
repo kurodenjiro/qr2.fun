@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { designs } from "@/db/schema";
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +27,8 @@ export async function POST(request: Request) {
     };
 
     await db.insert(designs).values(newDesign);
+    revalidatePath("/collections");
+    revalidatePath(`/product/${newDesign.id}`);
 
     return NextResponse.json({ success: true, id: newDesign.id });
   } catch (error) {

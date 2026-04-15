@@ -13,6 +13,7 @@ type AddToCartButtonProps = {
     handle: string;
     image: string;
     price: number;
+    quantity?: number;
   };
 };
 

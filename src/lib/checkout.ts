@@ -59,6 +59,11 @@ const DEFAULT_CART: CheckoutItem[] = [
   },
 ];
 
+const DEFAULT_CART_SNAPSHOT: CheckoutItem[] = DEFAULT_CART.map((item) => ({ ...item }));
+
+let cachedCartRaw: string | null | undefined;
+let cachedCartSnapshot: CheckoutItem[] | undefined;
+
 function canUseStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
@@ -116,7 +121,31 @@ export function getDefaultCart() {
 }
 
 export function getStoredCart() {
-  return readJson<CheckoutItem[]>(CART_KEY, getDefaultCart());
+  if (!canUseStorage()) {
+    return DEFAULT_CART_SNAPSHOT;
+  }
+
+  const raw = window.localStorage.getItem(CART_KEY);
+  if (raw === cachedCartRaw && cachedCartSnapshot) {
+    return cachedCartSnapshot;
+  }
+
+  if (!raw) {
+    cachedCartRaw = null;
+    cachedCartSnapshot = DEFAULT_CART_SNAPSHOT;
+    return cachedCartSnapshot;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as CheckoutItem[];
+    cachedCartRaw = raw;
+    cachedCartSnapshot = parsed;
+    return cachedCartSnapshot;
+  } catch {
+    cachedCartRaw = null;
+    cachedCartSnapshot = DEFAULT_CART_SNAPSHOT;
+    return cachedCartSnapshot;
+  }
 }
 
 export function saveStoredCart(items: CheckoutItem[]) {

@@ -20,6 +20,9 @@ type DnaTrait = {
 };
 
 type DnaData = {
+  profileImageUrl?: string | null;
+  generatedImageUrl?: string | null;
+  qrCodeDataUrl?: string | null;
   scrapedAt?: string;
   tweetCount?: number;
   replyCount?: number;
@@ -36,20 +39,8 @@ const DEFAULT_ART_STYLES: ArtStyle[] = [
   {
     id: "cyber_kinetic",
     name: "CYBER_KINETIC",
-    description: "High-frequency energy pulse",
-    imageUrl: "/images/dna/cyber-kinetic.svg",
-  },
-  {
-    id: "mono_stasis",
-    name: "MONO_STASIS",
-    description: "Low-profile digital silence",
-    imageUrl: "/images/dna/mono-stasis.svg",
-  },
-  {
-    id: "void_signal",
-    name: "VOID_SIGNAL",
-    description: "Deep-space residual waveform",
-    imageUrl: "/images/dna/void-signal.svg",
+    description: "Default DNA monochrome prompt",
+    imageUrl: "/images/dna/example-reference.jpg",
   },
 ];
 
@@ -60,9 +51,12 @@ export default function PlaygroundPage() {
   const [handle, setHandle] = useState("");
   const [dnaData, setDnaData] = useState<DnaData | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isGeneratingArt, setIsGeneratingArt] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [artStyles, setArtStyles] = useState<ArtStyle[]>(DEFAULT_ART_STYLES);
+  const [amount, setAmount] = useState(1);
+  const [price, setPrice] = useState(72);
   
   const { isConnected: isWagmiConnected } = useWagmiAccount();
   const { openConnectModal } = useConnectModal();
@@ -83,7 +77,8 @@ export default function PlaygroundPage() {
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data.styles) && data.styles.length > 0) {
-          setArtStyles(data.styles);
+          // For now we only surface one DNA prompt option.
+          setArtStyles([data.styles[0]]);
         }
       } catch (err) {
         console.error("Failed to load styles:", err);
@@ -98,8 +93,8 @@ export default function PlaygroundPage() {
     }
   }, [artStyles, selectedStyle]);
 
-  const handleSyncHandle = async () => {
-    if (!handle) return;
+  const handleSyncHandle = async (): Promise<DnaData | null> => {
+    if (!handle) return null;
     setIsSyncing(true);
     try {
       const res = await fetch(`/api/dna/twitter?handle=${encodeURIComponent(handle)}`);
@@ -109,16 +104,82 @@ export default function PlaygroundPage() {
       // Generate QR Code for qr2.fun/id (using handle as id placeholder for now)
       const qrData = await QRCode.toDataURL(`https://qr2.fun/${handle}`);
       setQrCodeDataUrl(qrData);
+      return data;
     } catch (err) {
       console.error("Sync failed:", err);
+      return null;
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleGenerateArtwork = async (styleId: string) => {
+    const cleanHandle = handle.trim().replace(/^@/, "");
+    if (!cleanHandle) return;
+
+    setSelectedType("t-shirt");
+
+    let profileData = dnaData;
+    if (!profileData?.profileImageUrl) {
+      profileData = await handleSyncHandle();
+      if (!profileData?.profileImageUrl) return;
+    }
+
+    setIsGeneratingArt(true);
+    try {
+      const res = await fetch("/api/dna/banana", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          handle: cleanHandle,
+          styleId,
+          qrText: `https://qr2.fun/${cleanHandle}`,
+        }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result?.error || "Failed to generate artwork");
+      }
+
+      setDnaData((current) =>
+        current
+          ? {
+              ...current,
+              profileImageUrl: result.profileImageUrl ?? current.profileImageUrl ?? profileData?.profileImageUrl ?? null,
+              generatedImageUrl: result.imageUrl,
+              qrCodeDataUrl: result.qrCodeDataUrl ?? current.qrCodeDataUrl,
+            }
+          : {
+              profileImageUrl: result.profileImageUrl ?? profileData?.profileImageUrl ?? null,
+              generatedImageUrl: result.imageUrl,
+              qrCodeDataUrl: result.qrCodeDataUrl ?? null,
+              scrapedAt: undefined,
+              tweetCount: undefined,
+              replyCount: undefined,
+              traits: [],
+              metadata: {},
+              rawSample: [],
+            },
+      );
+      setQrCodeDataUrl(result.qrCodeDataUrl || "");
+    } catch (err) {
+      console.error("Artwork generation failed:", err);
+    } finally {
+      setIsGeneratingArt(false);
     }
   };
 
   const handleConfirmGeneration = async () => {
     setIsSaving(true);
     try {
+        const normalizedAmount = Math.max(1, Math.floor(amount || 1));
+        const normalizedPrice = Math.max(1, Number(price) || 72);
+        const designDnaData = {
+          ...(dnaData || { status: "UNSYNCED" }),
+          amount: normalizedAmount,
+          price: normalizedPrice,
+        };
         const res = await fetch("/api/designs/save", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -126,7 +187,7 @@ export default function PlaygroundPage() {
                 handle: handle.trim(),
                 type: selectedType,
                 styleId: selectedStyle,
-                dnaData: dnaData || { status: "UNSYNCED" },
+                dnaData: designDnaData,
                 qrUrl: `https://qr2.fun/${handle.trim() || 'anonymous'}`
             })
         });
@@ -142,18 +203,18 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <main className="pt-24 min-h-screen p-8 bg-background relative overflow-hidden">
+    <main className="pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-8 bg-background relative overflow-hidden">
       {/* Background Data Noise Decor */}
       <div className="absolute top-40 right-10 opacity-10 font-label text-[10px] text-primary rotate-90 tracking-[1em] pointer-events-none uppercase">
         sys_load_78% // stream_buffer_active // kinetic_sync_enabled
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-12 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-12 gap-6 lg:gap-8">
         {/* Left Column: Configuration */}
-        <div className="col-span-12 lg:col-span-5 space-y-10">
+        <div className="col-span-12 lg:col-span-5 space-y-8">
           <header>
-            <h1 className="text-5xl font-bold font-headline tracking-tighter italic mb-2 text-zinc-100">PLAYGROUND_ENTITY</h1>
-            <p className="font-label text-zinc-500 tracking-widest text-xs uppercase">Design your physical interface proxy.</p>
+            <h1 className="text-4xl sm:text-5xl font-bold font-headline tracking-tighter italic mb-2 text-zinc-100">Design Playground</h1>
+            <p className="font-label text-zinc-500 tracking-widest text-xs uppercase">Create your custom product in three steps.</p>
           </header>
 
           {/* Input Handle */}
@@ -168,7 +229,7 @@ export default function PlaygroundPage() {
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
                 className="w-full bg-surface-container-low border-b-2 border-zinc-800 py-4 pl-10 pr-24 text-primary font-headline focus:ring-0 focus:border-primary transition-all underline-none outline-none" 
-                placeholder="IDENTITY_KEY" 
+                placeholder="your_handle" 
                 type="text"
               />
               <button 
@@ -176,7 +237,7 @@ export default function PlaygroundPage() {
                 disabled={isSyncing || !handle}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 font-headline text-xs italic tracking-widest transition-all disabled:opacity-50"
               >
-                {isSyncing ? "SYNCING..." : "SYNC_IDENTITY"}
+                {isSyncing ? "Syncing..." : "Sync"}
               </button>
             </div>
             {dnaData && (
@@ -232,9 +293,53 @@ export default function PlaygroundPage() {
 
           </section>
 
-          {/* Apparel Type Selection */}
+          {/* Style Generation */}
           <section className="space-y-4">
-            <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Apparel Type</label>
+            <div className="flex items-center justify-between">
+              <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Choose Art Style</label>
+                  <Link href="/playground/styles/upload" className="font-label text-[10px] tracking-widest uppercase text-secondary hover:text-primary">
+                Upload Style
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              {artStyles.map((style) => (
+                <button
+                  type="button"
+                  key={style.id}
+                  onClick={() => {
+                    setSelectedStyle(style.id);
+                  }}
+                  className={`bg-surface-container-low p-4 flex items-center gap-4 border-l-4 transition-all cursor-pointer ${selectedStyle === style.id ? 'border-secondary bg-surface-container-high' : 'border-zinc-800 hover:bg-surface-container hover:border-zinc-600'}`}
+                >
+                  <div className="w-16 h-16 bg-zinc-800 flex-shrink-0 relative overflow-hidden">
+                    <img
+                      className="w-full h-full object-cover grayscale opacity-60 hover:grayscale-0 transition-all duration-300"
+                      src={selectedStyle === style.id && dnaData?.generatedImageUrl ? dnaData.generatedImageUrl : style.imageUrl}
+                      alt={style.name}
+                    />
+                    {isGeneratingArt && selectedStyle === style.id && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/45">
+                        <span className="font-label text-[8px] uppercase tracking-[0.3em] text-white">
+                          Generating
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className={`font-headline font-bold italic ${selectedStyle === style.id ? 'text-secondary' : 'text-zinc-400'}`}>{style.name}</div>
+                    <div className="font-label text-[10px] text-zinc-600 uppercase">{style.description}</div>
+                  </div>
+                  <div className={selectedStyle === style.id ? 'text-secondary' : 'text-zinc-700'}>
+                    <span className="material-symbols-outlined">{selectedStyle === style.id ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Shirt Creation */}
+          <section className="space-y-4">
+            <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Product Setup</label>
             <div className="grid grid-cols-2 gap-4">
               <button 
                 onClick={() => setSelectedType('t-shirt')}
@@ -259,37 +364,47 @@ export default function PlaygroundPage() {
                 <div className="font-label text-[10px] text-zinc-600 uppercase mt-1">Heavy Shield</div>
               </button>
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="font-label text-[9px] tracking-[0.2em] text-zinc-500 uppercase">Amount</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={amount}
+                  onChange={(e) => setAmount(Math.max(1, Number.parseInt(e.target.value || "1", 10) || 1))}
+                  className="w-full bg-surface-container-low border border-zinc-800 py-3 px-4 text-primary font-headline outline-none focus:border-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-label text-[9px] tracking-[0.2em] text-zinc-500 uppercase">Price (USD)</label>
+                <input
+                  type="number"
+                  min={1}
+                  step={0.01}
+                  value={price}
+                  onChange={(e) => setPrice(Math.max(1, Number(e.target.value) || 1))}
+                  className="w-full bg-surface-container-low border border-zinc-800 py-3 px-4 text-primary font-headline outline-none focus:border-primary"
+                />
+              </div>
+            </div>
           </section>
 
-          {/* Art Style Selection Cards */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Art DNA Style</label>
-              <Link href="/playground/styles/upload" className="font-label text-[10px] tracking-widest uppercase text-secondary hover:text-primary">
-                Upload Style
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              {artStyles.map((style) => (
-                <div 
-                  key={style.id}
-                  onClick={() => setSelectedStyle(style.id)}
-                  className={`bg-surface-container-low p-4 flex items-center gap-4 border-l-4 transition-all cursor-pointer ${selectedStyle === style.id ? 'border-secondary bg-surface-container-high' : 'border-zinc-800 hover:bg-surface-container hover:border-zinc-600'}`}
-                >
-                  <div className="w-16 h-16 bg-zinc-800 flex-shrink-0 relative overflow-hidden">
-                    <img className="w-full h-full object-cover grayscale opacity-60 hover:grayscale-0 transition-all duration-300" src={style.imageUrl} alt={style.name} />
-                  </div>
-                  <div className="flex-1">
-                    <div className={`font-headline font-bold italic ${selectedStyle === style.id ? 'text-secondary' : 'text-zinc-400'}`}>{style.name}</div>
-                    <div className="font-label text-[10px] text-zinc-600 uppercase">{style.description}</div>
-                  </div>
-                  <div className={selectedStyle === style.id ? 'text-secondary' : 'text-zinc-700'}>
-                    <span className="material-symbols-outlined">{selectedStyle === style.id ? 'radio_button_checked' : 'radio_button_unchecked'}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => void handleGenerateArtwork(selectedStyle)}
+              disabled={isGeneratingArt || !selectedStyle || !handle.trim() || !dnaData}
+              className="w-full flex items-center justify-center gap-3 bg-secondary/20 border border-secondary/50 text-secondary py-4 font-headline font-bold tracking-widest hover:bg-secondary/30 transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGeneratingArt ? "GENERATING_DNA..." : "GENERATE"}
+              <span className="material-symbols-outlined">auto_awesome</span>
+            </button>
+            {!dnaData && (
+              <p className="font-label text-[9px] text-zinc-500 uppercase tracking-widest">
+                Sync twitter handle first to enable generate
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Live Preview */}
@@ -303,7 +418,7 @@ export default function PlaygroundPage() {
             
             <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
-              <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live_Simulation_Active</span>
+              <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live Preview</span>
             </div>
 
             {/* The Apparel Preview */}
@@ -315,16 +430,21 @@ export default function PlaygroundPage() {
               />
               {/* DNA Art Overlay */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`transition-all duration-700 relative ${selectedType === 'hoodie' ? 'w-40 h-56 mt-4' : 'w-48 h-64'} opacity-80 mix-blend-lighten shadow-[0_0_30px_rgba(143,245,255,0.2)] border border-primary/20`}>
+                <div className={`transition-all duration-700 relative ${selectedType === 'hoodie' ? 'w-40 h-56 mt-4' : 'w-48 h-64'} ${dnaData?.generatedImageUrl ? 'opacity-100' : 'opacity-80'} shadow-[0_0_30px_rgba(143,245,255,0.2)] border border-primary/20 bg-black/10`}>
                   <img 
                     className="w-full h-full object-cover" 
-                    src={artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
+                    src={dnaData?.generatedImageUrl || artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
                     alt="DNA Art overlay" 
                   />
+                  {dnaData?.profileImageUrl && (
+                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full overflow-hidden border border-primary/50 bg-black shadow-lg">
+                      <img src={dnaData.profileImageUrl} className="w-full h-full object-cover" alt="Twitter avatar" />
+                    </div>
+                  )}
                   {/* QR Code Synthesis Overlay */}
-                  {qrCodeDataUrl && (
+                  {(qrCodeDataUrl || dnaData?.qrCodeDataUrl) && (
                     <div className="absolute bottom-4 right-4 w-12 h-12 bg-white p-1 border border-black/50 shadow-lg mix-blend-screen opacity-90">
-                        <img src={qrCodeDataUrl} className="w-full h-full invert" alt="QR Link" />
+                        <img src={qrCodeDataUrl || dnaData?.qrCodeDataUrl || ""} className="w-full h-full invert" alt="QR Link" />
                     </div>
                   )}
                 </div>
@@ -332,12 +452,12 @@ export default function PlaygroundPage() {
             </div>
 
             {/* Metadata HUD Overlay */}
-            <div className="absolute bottom-10 left-10 space-y-1">
-              <div className="font-label text-[8px] text-zinc-600 uppercase tracking-widest">Model_v_9.0</div>
-              <div className="font-headline font-bold text-primary tracking-widest text-sm italic">RENDER_001_ACTIVE</div>
+            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 space-y-1">
+              <div className="font-label text-[8px] text-zinc-600 uppercase tracking-widest">Model v9.0</div>
+              <div className="font-headline font-bold text-primary tracking-widest text-sm italic">Render Active</div>
             </div>
-            <div className="absolute bottom-10 right-10 text-right space-y-1">
-              <div className="font-label text-[8px] text-zinc-600 uppercase tracking-widest">Hash_ID</div>
+            <div className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 text-right space-y-1">
+              <div className="font-label text-[8px] text-zinc-600 uppercase tracking-widest">Hash ID</div>
               <div className="font-headline font-bold text-secondary tracking-widest text-sm italic">{dnaData ? dnaData.metadata.node : "0x8FF5...FF2F"}</div>
             </div>
 
@@ -346,22 +466,24 @@ export default function PlaygroundPage() {
                 onClick={() => setIsPreviewExpanded(true)}
                 className="absolute inset-0 bg-primary/5 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center cursor-zoom-in backdrop-blur-[2px] group z-20"
             >
-              <div className="border-2 border-primary bg-black/80 px-6 py-3 font-headline font-bold text-primary tracking-widest uppercase italic shadow-[0_0_15px_rgba(143,245,255,0.3)]">EXPAND_PREVIEW</div>
+              <div className="border-2 border-primary bg-black/80 px-6 py-3 font-headline font-bold text-primary tracking-widest uppercase italic shadow-[0_0_15px_rgba(143,245,255,0.3)]">Expand Preview</div>
             </div>
           </div>
 
           {/* Action Bar */}
-          <div className="mt-4 grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-3 bg-zinc-900 border border-zinc-800 text-zinc-400 py-5 font-headline font-bold tracking-widest hover:bg-zinc-800 transition-all uppercase italic">
-              <span className="material-symbols-outlined">save</span> SAVE_DRAFT
-            </button>
+          <div className="mt-4 grid grid-cols-1 gap-4">
             <button 
                 onClick={handleConfirmGeneration}
-                disabled={isSaving}
-                className="flex items-center justify-center gap-3 bg-primary text-on-primary py-5 font-headline font-bold tracking-widest hover:bg-primary-container transition-all uppercase shadow-[0_0_25px_rgba(143,245,255,0.4)] italic"
+                disabled={isSaving || !dnaData?.generatedImageUrl}
+                className="flex items-center justify-center gap-3 bg-primary text-on-primary py-5 font-headline font-bold tracking-widest hover:bg-primary-container transition-all uppercase shadow-[0_0_25px_rgba(143,245,255,0.4)] italic disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSaving ? "SAVING_MANIFEST..." : "CONFIRM_GENERATION"} <span className="material-symbols-outlined font-bold">bolt</span>
+              {isSaving ? "Saving..." : "Create Product"} <span className="material-symbols-outlined font-bold">bolt</span>
             </button>
+            {!dnaData?.generatedImageUrl && (
+              <p className="font-label text-[9px] text-zinc-500 uppercase tracking-widest">
+                Generate pattern first to enable create
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -370,7 +492,7 @@ export default function PlaygroundPage() {
       <div className="fixed bottom-4 left-4 z-40 pointer-events-none">
         <div className="bg-zinc-900/50 px-3 py-1 border border-zinc-800 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-          <span className="font-label text-[9px] text-zinc-600 uppercase tracking-[0.2em]">Local_Node_Sync: OK</span>
+          <span className="font-label text-[9px] text-zinc-600 uppercase tracking-[0.2em]">Connection: Ready</span>
         </div>
       </div>
 
@@ -406,22 +528,27 @@ export default function PlaygroundPage() {
                 <span className="material-symbols-outlined text-4xl">close</span>
              </button>
              
-             <div className="relative w-full max-w-3xl aspect-[4/5] bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+              <div className="relative w-full max-w-3xl aspect-[4/5] bg-zinc-900 border border-zinc-800 flex items-center justify-center">
                 <img 
                     className="w-4/5 h-4/5 object-contain mix-blend-screen opacity-90" 
                     src={garmentImages[selectedType as keyof typeof garmentImages]} 
                     alt="Apparel Full View"
                 />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className={`relative ${selectedType === 'hoodie' ? 'w-56 h-80 mt-6' : 'w-64 h-96'} opacity-90 mix-blend-lighten border-2 border-primary/30`}>
+                    <div className={`relative ${selectedType === 'hoodie' ? 'w-56 h-80 mt-6' : 'w-64 h-96'} ${dnaData?.generatedImageUrl ? 'opacity-100' : 'opacity-90'} border-2 border-primary/30 bg-black/10`}>
                         <img 
                             className="w-full h-full object-cover" 
-                            src={artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
+                            src={dnaData?.generatedImageUrl || artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
                             alt="DNA Art overlay" 
                         />
-                        {qrCodeDataUrl && (
+                        {dnaData?.profileImageUrl && (
+                          <div className="absolute top-6 left-6 w-12 h-12 rounded-full overflow-hidden border border-primary/60 bg-black shadow-2xl">
+                            <img src={dnaData.profileImageUrl} className="w-full h-full object-cover" alt="Twitter avatar" />
+                          </div>
+                        )}
+                        {(qrCodeDataUrl || dnaData?.qrCodeDataUrl) && (
                             <div className="absolute bottom-6 right-6 w-16 h-16 bg-white p-1 border border-black/50 shadow-2xl mix-blend-screen opacity-90">
-                                <img src={qrCodeDataUrl} className="w-full h-full invert" alt="QR Link" />
+                                <img src={qrCodeDataUrl || dnaData?.qrCodeDataUrl || ""} className="w-full h-full invert" alt="QR Link" />
                             </div>
                         )}
                     </div>

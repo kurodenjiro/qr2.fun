@@ -33,3 +33,41 @@ export const artStyles = sqliteTable("art_styles", {
   imageUrl: text("image_url").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(strftime('%s', 'now'))`),
 });
+
+export const twitterTweetEmbeddings = sqliteTable("twitter_tweet_embeddings", {
+  id: text("id").primaryKey(),
+  handle: text("handle").notNull(),
+  topic: text("topic"),
+  tweetText: text("tweet_text").notNull(),
+  isReply: integer("is_reply", { mode: "boolean" }).notNull().default(false),
+  likes: integer("likes").notNull().default(0),
+  retweets: integer("retweets").notNull().default(0),
+  replies: integer("replies").notNull().default(0),
+  tweetTimestamp: text("tweet_timestamp"),
+  embedding: text("embedding").notNull(),
+  model: text("model").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(strftime('%s', 'now'))`),
+});
+
+export const twitterStyleAnalyses = sqliteTable("twitter_style_analyses", {
+  id: text("id").primaryKey(),
+  handle: text("handle").notNull(),
+  topic: text("topic"),
+  profileImageUrl: text("profile_image_url"),
+  analysisJson: text("analysis_json").notNull(),
+  profileEmbedding: text("profile_embedding").notNull(),
+  sourceTweets: text("source_tweets").notNull(),
+  model: text("model").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(strftime('%s', 'now'))`),
+});
+
+export const twitterProfiles = sqliteTable("twitter_profiles", {
+  handle: text("handle").primaryKey(),
+  username: text("username"),
+  displayName: text("display_name"),
+  profileImageUrl: text("profile_image_url"),
+  profileBannerUrl: text("profile_banner_url"),
+  profileBio: text("profile_bio"),
+  profileWebsite: text("profile_website"),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().default(sql`(strftime('%s', 'now'))`),
+});
