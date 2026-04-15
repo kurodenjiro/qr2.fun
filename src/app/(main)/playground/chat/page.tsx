@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAccount as useWagmiAccount } from "wagmi";
+import LoginModal from "@/components/auth/LoginModal";
 
-export default function ForgeChatRefined() {
+export default function PlaygroundChat() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  
+  const { isConnected: isWagmiConnected } = useWagmiAccount();
+  const isConnected = isWagmiConnected;
+
   const [messages] = useState([
     {
       role: 'agent',
@@ -35,7 +42,7 @@ export default function ForgeChatRefined() {
           <span className="text-zinc-600 text-[8px]">V2.04_STABLE</span>
         </div>
         <div className="flex flex-col gap-1 flex-1">
-           <Link href="/forge/chat" className="flex items-center gap-4 px-6 py-3 text-secondary bg-surface-container-high border-l-4 border-secondary font-bold transition-all">
+           <Link href="/playground/chat" className="flex items-center gap-4 px-6 py-3 text-secondary bg-surface-container-high border-l-4 border-secondary font-bold transition-all">
             <span className="material-symbols-outlined text-sm">terminal</span>
             <span>Neural_Chat</span>
           </Link>
@@ -53,7 +60,7 @@ export default function ForgeChatRefined() {
           </button>
         </div>
         <div className="mt-auto px-4 pb-8 space-y-4">
-          <Link href="/forge" className="block w-full py-4 bg-primary text-on-primary font-bold tracking-widest text-[10px] text-center hover:bg-primary-container transition-all">
+          <Link href="/playground" className="block w-full py-4 bg-primary text-on-primary font-bold tracking-widest text-[10px] text-center hover:bg-primary-container transition-all">
             NEW_SESSION
           </Link>
           <button className="flex items-center gap-4 px-2 py-2 text-zinc-600 hover:text-primary transition-all w-full text-left">
@@ -212,6 +219,28 @@ export default function ForgeChatRefined() {
       <div className="fixed top-20 right-8 w-4 h-4 border-t-2 border-r-2 border-primary/10 pointer-events-none z-0"></div>
       <div className="fixed bottom-24 left-72 w-4 h-4 border-b-2 border-l-2 border-primary/10 pointer-events-none z-0"></div>
       <div className="fixed bottom-24 right-8 w-4 h-4 border-b-2 border-r-2 border-primary/10 pointer-events-none z-0"></div>
+
+      {/* Connection Guard Overlay */}
+      {!isConnected && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 sm:p-12">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-xl" />
+          <div className="relative w-full max-w-xl bg-zinc-950 border border-primary/20 p-8 sm:p-16 shadow-[0_0_100px_rgba(0,0,0,1)] text-center space-y-10">
+            <div className="space-y-4">
+              <div className="font-label text-primary text-[10px] tracking-[0.5em] uppercase opacity-70">NEURAL_LINK_ERROR // OFFLINE</div>
+              <h2 className="text-5xl font-black font-headline tracking-tighter italic uppercase text-white leading-none">SYNC_REQUIRED</h2>
+              <p className="text-zinc-500 font-label text-xs uppercase tracking-widest max-w-sm mx-auto">Establish a biometric wallet uplink to initialize the AGENT_ALPHA neural interface.</p>
+            </div>
+            
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-10 py-5 bg-primary text-on-primary font-headline font-bold tracking-widest text-xl hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(143,245,255,0.3)] italic uppercase"
+            >
+              INITIALIZE_SYNC [ BOLT ]
+            </button>
+            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

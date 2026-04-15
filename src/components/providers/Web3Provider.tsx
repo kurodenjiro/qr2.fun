@@ -1,22 +1,10 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { http, createConfig, WagmiProvider } from "wagmi";
 import { celo, celoSepolia } from "wagmi/chains";
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors";
-
-// Starknet imports
-import { mainnet, sepolia } from "@starknet-react/chains";
-import {
-  StarknetConfig,
-  jsonRpcProvider,
-  argent,
-  braavos,
-  useInjectedConnectors,
-  voyager
-} from "@starknet-react/core";
-// We use starknetkit's connect function directly in the UI for v3 compatibility
 
 // 1. Setup QueryClient
 const queryClient = new QueryClient();
@@ -40,30 +28,11 @@ export const wagmiConfig = createConfig({
 });
 
 export function Web3Provider({ children }: { children: ReactNode }) {
-  const { connectors } = useInjectedConnectors({
-    recommended: [argent(), braavos()],
-    includeRecommended: "always",
-  });
-
   return (
     <WagmiProvider config={wagmiConfig}>
-      <StarknetConfig
-        chains={[mainnet, sepolia]}
-        provider={jsonRpcProvider({
-          rpc: (chain) => {
-            if (chain.id === mainnet.id) {
-              return { nodeUrl: "https://starknet-mainnet.public.blastapi.io" };
-            }
-            return { nodeUrl: "https://starknet-sepolia.public.blastapi.io" };
-          },
-        })}
-        connectors={connectors}
-        explorer={voyager}
-      >
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </StarknetConfig>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }

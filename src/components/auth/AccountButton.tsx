@@ -1,7 +1,6 @@
 "use client";
 
 import { useAccount as useWagmiAccount, useDisconnect as useWagmiDisconnect } from "wagmi";
-import { useAccount as useStarknetAccount, useDisconnect as useStarknetDisconnect } from "@starknet-react/core";
 import { useState } from "react";
 import LoginModal from "./LoginModal";
 
@@ -9,23 +8,18 @@ export default function AccountButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { address: wagmiAddress, isConnected: isWagmiConnected } = useWagmiAccount();
-  const { address: starknetAddress, isConnected: isStarknetConnected } = useStarknetAccount();
   
   const { disconnect: wagmiDisconnect } = useWagmiDisconnect();
-  const { disconnect: starknetDisconnect } = useStarknetDisconnect();
 
-  const isConnected = isWagmiConnected || isStarknetConnected;
+  const isConnected = isWagmiConnected;
   
   // Truncate address for display
-  const displayAddress = isWagmiConnected 
+  const displayAddress = isWagmiConnected
     ? `${wagmiAddress?.slice(0, 6)}...${wagmiAddress?.slice(-4)}`
-    : isStarknetConnected 
-      ? `${starknetAddress?.slice(0, 6)}...${starknetAddress?.slice(-4)}`
-      : null;
+    : null;
 
   const handleDisconnect = () => {
     if (isWagmiConnected) wagmiDisconnect();
-    if (isStarknetConnected) starknetDisconnect();
   };
 
   if (!isConnected) {
@@ -47,7 +41,7 @@ export default function AccountButton() {
     <div className="flex items-center gap-3">
       <div className="flex flex-col items-end hidden sm:flex">
         <span className="font-label text-[8px] text-zinc-500 uppercase tracking-widest">
-          {isWagmiConnected ? "CELO_UPLINK" : "STARKNET_NODE"} // ACTIVE
+          CELO_UPLINK // ACTIVE
         </span>
         <span className="font-mono text-[10px] text-primary">{displayAddress}</span>
       </div>

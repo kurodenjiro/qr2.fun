@@ -1,7 +1,26 @@
-import Link from "next/link";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
+import { db } from "@/db";
+import { artStyles, designs } from "@/db/schema";
+import { ensureArtStylesTable } from "@/db/bootstrap";
+import AddToCartButton from "@/components/checkout/AddToCartButton";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
+  await ensureArtStylesTable();
+  const design = await db.select().from(designs).where(eq(designs.id, resolvedParams.id)).get();
+  if (!design) notFound();
+  const style = await db.select().from(artStyles).where(eq(artStyles.id, design.styleId)).get();
+  const styleName = style?.name ?? design.styleId;
+  const styleImage = style?.imageUrl || (design.type === "hoodie" ? "/images/hoodie-mockup.jpg" : "/images/tshirt-mockup.png");
+  const price = design.type === "hoodie" ? 120 : 72;
+
+  let dna: { traits?: Array<{ label: string; value: number }>; metadata?: { node?: string } } = {};
+  try {
+    dna = JSON.parse(design.dnaData);
+  } catch {
+    dna = {};
+  }
   
   return (
     <main className="flex-grow container mx-auto px-12 py-32 max-w-7xl">
@@ -16,9 +35,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40"></div>
 
             <img 
-              alt="KINETIC OVERRIDE TEE" 
+              alt={styleName}
               className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJzaL6my20-GR00tGAwwXKJP8Sa8kUBWob7rOFjgbclbOIwoj6N1tGB0ulkvr_HZQqO-2ZBQxLm0rR5HrSnaY9Sxkj8rBLl9HGhY8D6uzzNVcLVkthnKxGQVA660LA4G5W5dZFpvb_Swyi5ohNUoZE7fhp3jRXksU7_Noi_vXFM0c7T9yAol84OyTmRktl6UIVGMdTfifz1dFZGUUQbLTzvh6Q_ejg-nIsUAx2ghulvtul-Lz7XyDb9tTaI7I7WQlpyzfktb0Nf1Y" 
+              src={styleImage}
             />
             <div className="absolute top-4 left-4 p-2 bg-black/80 backdrop-blur-md border border-primary/20">
               <span className="font-label text-[10px] tracking-[0.2em] text-primary uppercase">SYS_VER_4.02</span>
@@ -49,10 +68,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="lg:col-span-5 flex flex-col gap-8 lg:sticky lg:top-32">
           <header className="flex flex-col gap-2">
             <h1 className="text-4xl md:text-5xl font-black font-headline tracking-tighter text-zinc-100 uppercase leading-none italic">
-              {resolvedParams.id.replace(/-/g, '_').toUpperCase()}
+              {styleName.replace(/-/g, "_")}
             </h1>
             <div className="flex items-center gap-4 mt-2">
-              <span className="text-3xl font-headline font-bold text-primary">$65.00</span>
+              <span className="text-3xl font-headline font-bold text-primary">${price.toFixed(2)}</span>
               <div className="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/20">
                 <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></div>
                 <span className="font-label text-[10px] tracking-[0.1em] text-secondary font-bold uppercase">IN STOCK</span>
@@ -64,7 +83,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <div className="grid grid-cols-1 gap-6">
               <div className="flex flex-col gap-2">
                 <span className="font-label text-[10px] tracking-[0.2em] text-zinc-500 uppercase">Material</span>
-                <p className="text-zinc-300 font-light tracking-tight text-sm">300GSM Heavyweight Technical Cotton. Moisture-wicking treated fiber.</p>
+                <p className="text-zinc-300 font-light tracking-tight text-sm">
+                  {design.type === "hoodie" ? "420GSM Heavyweight fleece blend." : "300GSM Technical cotton blend."}
+                </p>
               </div>
               <div className="flex flex-col gap-2">
                 <span className="font-label text-[10px] tracking-[0.2em] text-zinc-500 uppercase">Fit</span>
@@ -72,7 +93,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </div>
               <div className="flex flex-col gap-2">
                 <span className="font-label text-[10px] tracking-[0.2em] text-zinc-500 uppercase">Detail</span>
-                <p className="text-zinc-300 font-light tracking-tight text-sm">Reflective cyber-print graphics. Reinforced double-stitched hem.</p>
+                <p className="text-zinc-300 font-light tracking-tight text-sm">
+                  <span>Style ID: {design.styleId}</span>
+                  <span>{" // "}</span>
+                  <span>Handle: @{design.handle}</span>
+                </p>
               </div>
             </div>
           </div>
@@ -104,10 +129,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           <div className="flex flex-col gap-4">
-            <button className="w-full bg-primary py-5 text-on-primary font-headline font-black text-xl tracking-tighter uppercase hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center gap-3">
-              ADD TO CART
-              <span className="material-symbols-outlined font-bold">bolt</span>
-            </button>
+            <AddToCartButton
+              item={{
+                id: design.id,
+                name: styleName.replace(/-/g, "_"),
+                type: design.type,
+                styleId: design.styleId,
+                handle: `@${design.handle}`,
+                image: styleImage,
+                price,
+              }}
+            />
             <button className="w-full border-2 border-zinc-800 py-4 text-zinc-400 font-headline font-bold text-sm tracking-widest uppercase hover:border-secondary hover:text-secondary transition-all">
               ADD TO WISHLIST
             </button>
@@ -116,7 +148,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           <div className="pt-6 border-t border-zinc-800/50 flex flex-col gap-3">
             <div className="flex items-center gap-3 text-zinc-500">
               <span className="material-symbols-outlined text-sm">verified</span>
-              <span className="font-label text-[10px] tracking-widest uppercase">Authenticity Guaranteed</span>
+              <span className="font-label text-[10px] tracking-widest uppercase">
+                DNA Node: {dna?.metadata?.node ?? "N/A"}
+              </span>
             </div>
             <div className="flex items-center gap-3 text-zinc-500">
               <span className="material-symbols-outlined text-sm">local_shipping</span>
@@ -128,21 +162,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
       {/* Features Bento */}
       <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { icon: 'diamond', title: 'PREMIUM QUALITY', desc: 'Engineered with high-density fibers for maximum durability.', color: 'text-primary' },
-          { icon: 'fingerprint', title: 'UNIQUE DESIGN', desc: 'Each piece features exclusive digital distortion patterns.', color: 'text-secondary' },
-          { icon: 'electric_bolt', title: 'FAST SHIPPING', desc: 'Rapid deployment protocols ensure your order arrives quickly.', color: 'text-tertiary' }
-        ].map((feat, i) => (
+        {(dna.traits ?? []).slice(0, 3).map((feat, i) => (
           <div key={i} className="bg-surface-container-high p-8 flex flex-col gap-4 border border-zinc-800 relative group overflow-hidden">
             <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
               <span className="font-label text-[8px] text-zinc-500 uppercase">CODE:00{i+1}</span>
             </div>
-            <div className={`w-12 h-12 ${feat.color}/10 flex items-center justify-center ${feat.color} border border-current opacity-60`}>
-              <span className="material-symbols-outlined">{feat.icon}</span>
+            <div className="w-12 h-12 bg-primary/10 flex items-center justify-center text-primary border border-current opacity-60">
+              <span className="material-symbols-outlined">query_stats</span>
             </div>
-            <h3 className="font-headline font-black text-xl tracking-tighter uppercase text-zinc-100 italic">{feat.title}</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">{feat.desc}</p>
-            <div className={`mt-auto h-0.5 w-0 group-hover:w-full bg-current ${feat.color} transition-all duration-500`}></div>
+            <h3 className="font-headline font-black text-xl tracking-tighter uppercase text-zinc-100 italic">{feat.label}</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">Signal strength: {feat.value}%</p>
+            <div className="mt-auto h-0.5 w-0 group-hover:w-full bg-current text-primary transition-all duration-500"></div>
           </div>
         ))}
       </div>

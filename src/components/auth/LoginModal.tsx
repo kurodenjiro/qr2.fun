@@ -1,10 +1,8 @@
 "use client";
 
 import { useConnect as useWagmiConnect } from "wagmi";
-import { useConnect as useStarknetConnect } from "@starknet-react/core";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { connect } from "starknetkit";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -13,7 +11,6 @@ interface LoginModalProps {
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { connect: wagmiConnect, connectors: wagmiConnectors } = useWagmiConnect();
-  const { connect: starknetConnect, connectors: starknetConnectors } = useStarknetConnect();
 
   const handleCeloConnect = () => {
     // MiniPay is 'injected'
@@ -23,24 +20,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       onClose();
     } else {
       alert("MiniPay / Injected wallet not detected.");
-    }
-  };
-
-  const handleStarknetSync = async () => {
-    try {
-      const { connector } = await connect({
-        modalMode: "alwaysAsk",
-        modalTheme: "dark",
-        dappName: "ETHREAL",
-      });
-
-      if (connector) {
-        // @ts-ignore - The connector from starknetkit is compatible with starknet-react
-        starknetConnect({ connector });
-        onClose();
-      }
-    } catch (error) {
-      console.error("StarknetKit Connection Error:", error);
     }
   };
 
@@ -94,24 +73,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <div className="absolute bottom-0 left-0 w-0 h-1 bg-primary group-hover:w-full transition-all duration-700"></div>
             </button>
 
-            {/* Starknet Section */}
-            <div className="space-y-5 pt-8 border-t border-zinc-900/50">
-              <div className="font-label text-[10px] text-zinc-600 uppercase tracking-[0.4em] text-center italic">_INITIALIZE_STARKNET_CHAIN_</div>
-              
-              <button
-                onClick={handleStarknetSync}
-                className="w-full group flex items-center justify-between px-8 py-8 bg-zinc-900 border border-zinc-800 hover:border-secondary transition-all relative"
-              >
-                <div className="space-y-1 text-left relative z-10">
-                  <div className="font-headline font-bold text-2xl italic text-white group-hover:text-secondary uppercase transition-colors">STARKNET_SYNC</div>
-                  <div className="font-label text-[10px] text-zinc-500 uppercase tracking-widest">UNIFIED // KIT_PROVIDER v3.4</div>
-                </div>
-                <div className="relative z-10">
-                  <div className="w-5 h-5 rounded-full bg-secondary shadow-[0_0_20px_rgba(152,255,143,1)] animate-pulse"></div>
-                </div>
-                <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </button>
-            </div>
           </div>
 
           <button 

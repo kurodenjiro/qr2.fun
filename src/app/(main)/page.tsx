@@ -17,7 +17,7 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-wrap gap-4 pt-4">
             <Link 
-              href="/forge"
+              href="/playground"
               className="bg-primary text-on-primary px-10 py-4 font-headline font-bold uppercase tracking-widest hover:bg-primary-container transition-all relative group"
             >
               CREATE AND SELL

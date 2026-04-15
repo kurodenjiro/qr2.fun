@@ -1,0 +1,37 @@
+<svg width="1200" height="1600" viewBox="0 0 1200 1600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="1600" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#05070C"/>
+      <stop offset="0.55" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#1A2C42"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="300" y1="320" x2="920" y2="1280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80F5FF"/>
+      <stop offset="0.5" stop-color="#D8FE7A"/>
+      <stop offset="1" stop-color="#FF8A6B"/>
+    </linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1600" fill="url(#bg)"/>
+  <circle cx="280" cy="240" r="150" fill="#80F5FF" fill-opacity="0.14" filter="url(#blur)"/>
+  <circle cx="940" cy="320" r="200" fill="#FF8A6B" fill-opacity="0.1" filter="url(#blur)"/>
+  <circle cx="760" cy="1180" r="240" fill="#D8FE7A" fill-opacity="0.08" filter="url(#blur)"/>
+  <path d="M140 470C260 390 344 342 446 366C540 389 590 494 664 548C734 598 846 602 980 496" stroke="url(#accent)" stroke-width="34" stroke-linecap="round"/>
+  <path d="M128 780C236 724 332 692 422 720C504 745 562 828 640 872C736 927 836 920 980 820" stroke="#80F5FF" stroke-opacity="0.8" stroke-width="18" stroke-linecap="round"/>
+  <path d="M120 1090C228 1016 330 990 438 1014C530 1034 588 1124 658 1170C744 1226 850 1230 1018 1140" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="14" stroke-linecap="round"/>
+  <g opacity="0.92">
+    <rect x="150" y="250" width="900" height="820" rx="48" stroke="#B8F7FF" stroke-opacity="0.14" stroke-width="2"/>
+    <rect x="190" y="290" width="820" height="740" rx="34" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="2"/>
+  </g>
+  <g opacity="0.9">
+    <rect x="250" y="128" width="80" height="80" fill="#80F5FF" fill-opacity="0.88"/>
+    <rect x="370" y="128" width="80" height="80" fill="#D8FE7A" fill-opacity="0.88"/>
+    <rect x="490" y="128" width="80" height="80" fill="#FF8A6B" fill-opacity="0.88"/>
+    <rect x="610" y="128" width="80" height="80" fill="#80F5FF" fill-opacity="0.88"/>
+    <rect x="730" y="128" width="80" height="80" fill="#D8FE7A" fill-opacity="0.88"/>
+    <rect x="850" y="128" width="80" height="80" fill="#FF8A6B" fill-opacity="0.88"/>
+  </g>
+  <text x="72" y="1500" fill="#DDE9FF" fill-opacity="0.72" font-family="Arial, sans-serif" font-size="72" letter-spacing="10">CYBER_KINETIC</text>
+</svg>

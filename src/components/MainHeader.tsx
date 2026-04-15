@@ -20,6 +20,12 @@ export default function MainHeader() {
             </Link>
             <Link 
               className="font-headline uppercase tracking-[0.1em] text-sm text-primary opacity-70 hover:opacity-100 hover:text-secondary transition-all duration-300" 
+              href="/playground"
+            >
+              PLAYGROUND
+            </Link>
+            <Link 
+              className="font-headline uppercase tracking-[0.1em] text-sm text-primary opacity-70 hover:opacity-100 hover:text-secondary transition-all duration-300" 
               href="/collections"
             >
               COLLECTIONS
