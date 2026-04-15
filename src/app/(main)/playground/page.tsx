@@ -203,9 +203,9 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <main className="pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-8 bg-background relative overflow-hidden">
+    <main className="pt-16 sm:pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-8 bg-background relative overflow-hidden">
       {/* Background Data Noise Decor */}
-      <div className="absolute top-40 right-10 opacity-10 font-label text-[10px] text-primary rotate-90 tracking-[1em] pointer-events-none uppercase">
+      <div className="hidden lg:block absolute top-40 right-10 opacity-10 font-label text-[10px] text-primary rotate-90 tracking-[1em] pointer-events-none uppercase">
         sys_load_78% // stream_buffer_active // kinetic_sync_enabled
       </div>
 
@@ -213,7 +213,7 @@ export default function PlaygroundPage() {
         {/* Left Column: Configuration */}
         <div className="col-span-12 lg:col-span-5 space-y-8">
           <header>
-            <h1 className="text-4xl sm:text-5xl font-bold font-headline tracking-tighter italic mb-2 text-zinc-100">Design Playground</h1>
+            <h1 className="text-3xl sm:text-5xl font-bold font-headline tracking-tighter italic mb-2 text-zinc-100">Design Playground</h1>
             <p className="font-label text-zinc-500 tracking-widest text-xs uppercase">Create your custom product in three steps.</p>
           </header>
 
@@ -221,7 +221,7 @@ export default function PlaygroundPage() {
           <section className="space-y-4">
             <div className="flex justify-between items-end">
               <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Twitter Handle</label>
-              <span className="font-label text-[8px] text-zinc-600 uppercase">SYS_REF_292</span>
+              <span className="hidden sm:inline font-label text-[8px] text-zinc-600 uppercase">SYS_REF_292</span>
             </div>
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-headline text-lg italic">@</div>
@@ -411,12 +411,12 @@ export default function PlaygroundPage() {
         <div className="col-span-12 lg:col-span-7 lg:sticky lg:top-24 h-fit">
           <div className="relative bg-surface-container-highest aspect-[4/5] flex items-center justify-center overflow-hidden border border-zinc-800/30">
             {/* HUD Elements */}
-            <div className="absolute top-6 left-6 border-l border-t border-primary/40 w-12 h-12"></div>
-            <div className="absolute top-6 right-6 border-r border-t border-primary/40 w-12 h-12"></div>
-            <div className="absolute bottom-6 left-6 border-l border-b border-primary/40 w-12 h-12"></div>
-            <div className="absolute bottom-6 right-6 border-r border-b border-primary/40 w-12 h-12"></div>
+            <div className="hidden sm:block absolute top-6 left-6 border-l border-t border-primary/40 w-12 h-12"></div>
+            <div className="hidden sm:block absolute top-6 right-6 border-r border-t border-primary/40 w-12 h-12"></div>
+            <div className="hidden sm:block absolute bottom-6 left-6 border-l border-b border-primary/40 w-12 h-12"></div>
+            <div className="hidden sm:block absolute bottom-6 right-6 border-r border-b border-primary/40 w-12 h-12"></div>
             
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <div className="hidden sm:flex absolute top-8 left-1/2 -translate-x-1/2 items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
               <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live Preview</span>
             </div>
@@ -489,7 +489,7 @@ export default function PlaygroundPage() {
       </div>
 
       {/* Background Noise/HUD Textures */}
-      <div className="fixed bottom-4 left-4 z-40 pointer-events-none">
+      <div className="hidden sm:block fixed bottom-4 left-4 z-40 pointer-events-none">
         <div className="bg-zinc-900/50 px-3 py-1 border border-zinc-800 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
           <span className="font-label text-[9px] text-zinc-600 uppercase tracking-[0.2em]">Connection: Ready</span>

@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function LandingPage() {
   return (
-    <main className="pt-24">
+    <main className="pt-16 sm:pt-24">
       {/* Hero Section */}
-      <section className="relative min-h-[921px] flex flex-col md:flex-row items-center justify-center px-12 gap-12 overflow-hidden">
+      <section className="relative min-h-[640px] sm:min-h-[921px] flex flex-col md:flex-row items-center justify-center px-4 sm:px-8 lg:px-12 gap-8 sm:gap-12 overflow-hidden">
         <div className="z-10 w-full md:w-1/2 space-y-8">
           <div className="space-y-2">
             <span className="font-label text-xs tracking-[0.3em] text-secondary-fixed uppercase">SYSTEM_INIT // 2024</span>
@@ -70,7 +70,7 @@ export default function LandingPage() {
       </section>
 
       {/* The Process Section */}
-      <section className="py-32 px-12 bg-surface-container-low border-y border-outline-variant/10 relative overflow-hidden">
+      <section className="py-20 sm:py-32 px-4 sm:px-8 lg:px-12 bg-surface-container-low border-y border-outline-variant/10 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 font-label text-[8px] opacity-20 pointer-events-none tracking-widest">
           01001001 01001110 01010100 01000101 01010010 01000110 01000001 01000011 01000101
         </div>
@@ -141,14 +141,15 @@ export default function LandingPage() {
       </section>
 
       {/* Recent Drops */}
-      <section className="py-32 px-12">
-        <div className="flex justify-between items-center mb-16">
-          <h2 className="text-4xl font-bold font-headline tracking-tighter italic">RECENT_DROPS</h2>
+      <section className="py-20 sm:py-32 px-4 sm:px-8 lg:px-12">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl font-bold font-headline tracking-tighter italic break-words">RECENT_DROPS</h2>
           <Link 
             href="/collections" 
-            className="text-primary font-label text-xs tracking-[0.2em] border-b border-primary pb-1 hover:text-secondary hover:border-secondary transition-all"
+            className="self-start sm:self-auto text-primary font-label text-xs tracking-[0.15em] sm:tracking-[0.2em] border-b border-primary pb-1 hover:text-secondary hover:border-secondary transition-all"
           >
-            VIEW_ALL_COLLECTIONS
+            <span className="sm:hidden">VIEW_ALL</span>
+            <span className="hidden sm:inline">VIEW_ALL_COLLECTIONS</span>
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -216,7 +217,7 @@ export default function LandingPage() {
       </section>
 
       {/* Newsletter */}
-      <section className="py-24 px-12 border-t border-zinc-800/50">
+      <section className="py-16 sm:py-24 px-4 sm:px-8 lg:px-12 border-t border-zinc-800/50">
         <div className="max-w-4xl mx-auto text-center space-y-10">
           <h2 className="text-4xl md:text-6xl font-bold font-headline uppercase tracking-tighter leading-none italic text-zinc-100">
             JOIN THE <span className="text-secondary">VOID_PROTOCOL</span>
