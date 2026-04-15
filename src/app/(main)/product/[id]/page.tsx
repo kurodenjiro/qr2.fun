@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { artStyles, designs } from "@/db/schema";
 import { ensureArtStylesTable } from "@/db/bootstrap";
 import AddToCartButton from "@/components/checkout/AddToCartButton";
+import TShirtPreviewStage from "@/components/TShirtPreviewStage";
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -39,43 +40,17 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         {/* Product Gallery */}
         <div className="lg:col-span-7 flex flex-col gap-4">
           <div className="relative bg-surface-container-low aspect-[4/5] overflow-hidden border border-zinc-800 transition-all duration-300">
-             {/* Corner brackets */}
-             <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary/40"></div>
-             <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-primary/40"></div>
-             <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary/40"></div>
-             <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40"></div>
-
-            <img
-              alt={`${design.type} mockup`}
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              src={baseMockupImage}
+            <TShirtPreviewStage
+              type={design.type as "t-shirt" | "hoodie"}
+              baseMockupSrc={baseMockupImage}
+              artworkSrc={printImage}
+              profileImageUrl={dna.profileImageUrl ?? null}
+              qrCodeSrc={dna.qrCodeDataUrl ?? null}
+              title={styleName}
+              subtitle={design.type === "hoodie" ? "heavy shell" : "light core"}
+              showMetadata
+              className="h-full"
             />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className={`relative ${design.type === "hoodie" ? "w-56 h-80 mt-6" : "w-64 h-96"} opacity-90 mix-blend-lighten border-2 border-primary/30`}>
-                <img
-                  alt={styleName}
-                  className="w-full h-full object-cover"
-                  src={printImage}
-                />
-                {dna.profileImageUrl && (
-                  <div className="absolute top-4 left-4 w-14 h-14 rounded-full overflow-hidden border-2 border-primary bg-black shadow-lg">
-                    <img src={dna.profileImageUrl} alt="Twitter avatar" className="w-full h-full object-cover" />
-                  </div>
-                )}
-                {dna.qrCodeDataUrl && (
-                  <div className="absolute bottom-4 right-4 w-16 h-16 bg-white p-1 border border-black/50 shadow-2xl mix-blend-screen opacity-90">
-                    <img src={dna.qrCodeDataUrl} alt="QR Link" className="w-full h-full invert" />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="absolute top-4 left-4 p-2 bg-black/80 backdrop-blur-md border border-primary/20">
-              <span className="font-label text-[10px] tracking-[0.2em] text-primary uppercase">SYS_VER_4.02</span>
-            </div>
-            <div className="absolute bottom-4 right-4 flex flex-col gap-1 items-end">
-              <div className="h-px w-12 bg-secondary"></div>
-              <span className="font-label text-[10px] tracking-[0.2em] text-secondary uppercase font-bold">OVERRIDE_ACTIVE</span>
-            </div>
           </div>
           
           <div className="grid grid-cols-4 gap-4">

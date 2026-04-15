@@ -6,6 +6,7 @@ import { useAccount as useWagmiAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import QRCode from "qrcode";
 import { useEffect } from "react";
+import TShirtPreviewStage from "@/components/TShirtPreviewStage";
 
 type ArtStyle = {
   id: string;
@@ -47,7 +48,6 @@ const DEFAULT_ART_STYLES: ArtStyle[] = [
 export default function PlaygroundPage() {
   const [selectedType, setSelectedType] = useState('t-shirt');
   const [selectedStyle, setSelectedStyle] = useState("");
-  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [handle, setHandle] = useState("");
   const [dnaData, setDnaData] = useState<DnaData | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -63,12 +63,6 @@ export default function PlaygroundPage() {
   const isConnected = isWagmiConnected;
   const topWords = dnaData?.metadata.top_words ?? [];
   const rawSample = dnaData?.rawSample ?? [];
-
-  // Garment Images
-  const garmentImages = {
-    't-shirt': '/images/tshirt-mockup.png',
-    'hoodie': '/images/hoodie-mockup.jpg'
-  };
 
   useEffect(() => {
     async function loadStyles() {
@@ -201,6 +195,14 @@ export default function PlaygroundPage() {
         setIsSaving(false);
     }
   };
+
+  const selectedArtworkSrc =
+    dnaData?.generatedImageUrl ||
+    artStyles.find((style) => style.id === selectedStyle)?.imageUrl ||
+    "/images/dna/example-reference.jpg";
+
+  const selectedMockupSrc =
+    selectedType === "hoodie" ? "/images/hoodie-mockup.jpg" : "/images/tshirt-mockup.png";
 
   return (
     <main className="pt-16 sm:pt-24 min-h-screen px-4 sm:px-6 lg:px-8 pb-8 bg-background relative overflow-hidden">
@@ -421,34 +423,19 @@ export default function PlaygroundPage() {
               <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live Preview</span>
             </div>
 
-            {/* The Apparel Preview */}
-            <div className="relative w-4/5 h-4/5 flex items-center justify-center">
-              <img 
-                className="w-full h-full object-contain mix-blend-screen opacity-90 transition-all duration-500" 
-                src={garmentImages[selectedType as keyof typeof garmentImages]} 
-                alt="Apparel Mockup"
+            <div className="relative w-full h-full p-4 sm:p-6">
+              <TShirtPreviewStage
+                type={selectedType as "t-shirt" | "hoodie"}
+                baseMockupSrc={selectedMockupSrc}
+                artworkSrc={selectedArtworkSrc}
+                profileImageUrl={dnaData?.profileImageUrl ?? null}
+                qrCodeSrc={qrCodeDataUrl || dnaData?.qrCodeDataUrl || null}
+                title="LIVE PREVIEW"
+                subtitle="three.js style stage"
+                compact
+                showMetadata={false}
+                className="h-full"
               />
-              {/* DNA Art Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className={`transition-all duration-700 relative ${selectedType === 'hoodie' ? 'w-40 h-56 mt-4' : 'w-48 h-64'} ${dnaData?.generatedImageUrl ? 'opacity-100' : 'opacity-80'} shadow-[0_0_30px_rgba(143,245,255,0.2)] border border-primary/20 bg-black/10`}>
-                  <img 
-                    className="w-full h-full object-cover" 
-                    src={dnaData?.generatedImageUrl || artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
-                    alt="DNA Art overlay" 
-                  />
-                  {dnaData?.profileImageUrl && (
-                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full overflow-hidden border border-primary/50 bg-black shadow-lg">
-                      <img src={dnaData.profileImageUrl} className="w-full h-full object-cover" alt="Twitter avatar" />
-                    </div>
-                  )}
-                  {/* QR Code Synthesis Overlay */}
-                  {(qrCodeDataUrl || dnaData?.qrCodeDataUrl) && (
-                    <div className="absolute bottom-4 right-4 w-12 h-12 bg-white p-1 border border-black/50 shadow-lg mix-blend-screen opacity-90">
-                        <img src={qrCodeDataUrl || dnaData?.qrCodeDataUrl || ""} className="w-full h-full invert" alt="QR Link" />
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
 
             {/* Metadata HUD Overlay */}
@@ -461,13 +448,6 @@ export default function PlaygroundPage() {
               <div className="font-headline font-bold text-secondary tracking-widest text-sm italic">{dnaData ? dnaData.metadata.node : "0x8FF5...FF2F"}</div>
             </div>
 
-            {/* Fullscreen/Focus CTA */}
-            <div 
-                onClick={() => setIsPreviewExpanded(true)}
-                className="absolute inset-0 bg-primary/5 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center cursor-zoom-in backdrop-blur-[2px] group z-20"
-            >
-              <div className="border-2 border-primary bg-black/80 px-6 py-3 font-headline font-bold text-primary tracking-widest uppercase italic shadow-[0_0_15px_rgba(143,245,255,0.3)]">Expand Preview</div>
-            </div>
           </div>
 
           {/* Action Bar */}
@@ -513,56 +493,6 @@ export default function PlaygroundPage() {
             >
               WAGMI
             </button>
-          </div>
-        </div>
-      )}
-      {/* Expanded Preview Modal */}
-      {isPreviewExpanded && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-20">
-          <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl" onClick={() => setIsPreviewExpanded(false)} />
-          <div className="relative w-full h-full flex flex-col items-center justify-center">
-             <button 
-                onClick={() => setIsPreviewExpanded(false)}
-                className="absolute top-10 right-10 text-primary hover:text-white transition-colors"
-             >
-                <span className="material-symbols-outlined text-4xl">close</span>
-             </button>
-             
-              <div className="relative w-full max-w-3xl aspect-[4/5] bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                <img 
-                    className="w-4/5 h-4/5 object-contain mix-blend-screen opacity-90" 
-                    src={garmentImages[selectedType as keyof typeof garmentImages]} 
-                    alt="Apparel Full View"
-                />
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className={`relative ${selectedType === 'hoodie' ? 'w-56 h-80 mt-6' : 'w-64 h-96'} ${dnaData?.generatedImageUrl ? 'opacity-100' : 'opacity-90'} border-2 border-primary/30 bg-black/10`}>
-                        <img 
-                            className="w-full h-full object-cover" 
-                            src={dnaData?.generatedImageUrl || artStyles.find(s => s.id === selectedStyle)?.imageUrl} 
-                            alt="DNA Art overlay" 
-                        />
-                        {dnaData?.profileImageUrl && (
-                          <div className="absolute top-6 left-6 w-12 h-12 rounded-full overflow-hidden border border-primary/60 bg-black shadow-2xl">
-                            <img src={dnaData.profileImageUrl} className="w-full h-full object-cover" alt="Twitter avatar" />
-                          </div>
-                        )}
-                        {(qrCodeDataUrl || dnaData?.qrCodeDataUrl) && (
-                            <div className="absolute bottom-6 right-6 w-16 h-16 bg-white p-1 border border-black/50 shadow-2xl mix-blend-screen opacity-90">
-                                <img src={qrCodeDataUrl || dnaData?.qrCodeDataUrl || ""} className="w-full h-full invert" alt="QR Link" />
-                            </div>
-                        )}
-                    </div>
-                </div>
-             </div>
-             
-             <div className="mt-8 text-center space-y-2">
-                <div className="font-headline font-black text-2xl italic text-primary tracking-widest uppercase">
-                  <span>{selectedType}</span>
-                  <span>{" // "}</span>
-                  <span>{selectedStyle}</span>
-                </div>
-                <div className="font-label text-xs text-zinc-500 uppercase tracking-[0.4em]">Design_Hash: {dnaData ? dnaData.metadata.node : "0x8FF5...FF2F"}</div>
-             </div>
           </div>
         </div>
       )}
