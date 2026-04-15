@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { http, createConfig, WagmiProvider } from "wagmi";
 import { celo, celoSepolia } from "wagmi/chains";
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors";
@@ -31,7 +32,17 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <RainbowKitProvider
+          theme={darkTheme({
+            accentColor: "#8ff5ff",
+            accentColorForeground: "#030712",
+            borderRadius: "small",
+            fontStack: "system",
+            overlayBlur: "small",
+          })}
+        >
+          {children}
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

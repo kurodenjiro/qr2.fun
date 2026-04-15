@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useAccount as useWagmiAccount } from "wagmi";
-import LoginModal from "@/components/auth/LoginModal";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import QRCode from "qrcode";
 import { useEffect } from "react";
 
@@ -56,7 +56,6 @@ const DEFAULT_ART_STYLES: ArtStyle[] = [
 export default function PlaygroundPage() {
   const [selectedType, setSelectedType] = useState('t-shirt');
   const [selectedStyle, setSelectedStyle] = useState("");
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
   const [handle, setHandle] = useState("");
   const [dnaData, setDnaData] = useState<DnaData | null>(null);
@@ -66,6 +65,7 @@ export default function PlaygroundPage() {
   const [artStyles, setArtStyles] = useState<ArtStyle[]>(DEFAULT_ART_STYLES);
   
   const { isConnected: isWagmiConnected } = useWagmiAccount();
+  const { openConnectModal } = useConnectModal();
   const isConnected = isWagmiConnected;
   const topWords = dnaData?.metadata.top_words ?? [];
   const rawSample = dnaData?.rawSample ?? [];
@@ -386,12 +386,11 @@ export default function PlaygroundPage() {
             </div>
             
             <button 
-              onClick={() => setIsLoginModalOpen(true)}
+              onClick={() => openConnectModal?.()}
               className="px-10 py-5 bg-primary text-on-primary font-headline font-bold tracking-widest text-xl hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(143,245,255,0.3)] italic uppercase"
             >
-              INITIALIZE_SYNC [ BOLT ]
+              WAGMI
             </button>
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
           </div>
         </div>
       )}

@@ -1,14 +1,11 @@
 "use client";
 
 import { useAccount as useWagmiAccount, useDisconnect as useWagmiDisconnect } from "wagmi";
-import { useState } from "react";
-import LoginModal from "./LoginModal";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export default function AccountButton() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
   const { address: wagmiAddress, isConnected: isWagmiConnected } = useWagmiAccount();
-  
+  const { openConnectModal } = useConnectModal();
   const { disconnect: wagmiDisconnect } = useWagmiDisconnect();
 
   const isConnected = isWagmiConnected;
@@ -24,16 +21,13 @@ export default function AccountButton() {
 
   if (!isConnected) {
     return (
-      <>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-on-primary transition-all group active:scale-95 duration-200"
-        >
-          <span className="material-symbols-outlined text-xl group-hover:rotate-12 transition-transform">account_circle</span>
-          <span className="font-headline font-bold text-xs uppercase tracking-widest hidden md:inline">Connect</span>
-        </button>
-        <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      </>
+      <button
+        onClick={() => openConnectModal?.()}
+        className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/30 text-primary hover:bg-primary hover:text-on-primary transition-all group active:scale-95 duration-200"
+      >
+        <span className="material-symbols-outlined text-xl group-hover:rotate-12 transition-transform">account_circle</span>
+        <span className="font-headline font-bold text-xs uppercase tracking-widest hidden md:inline">Connect</span>
+      </button>
     );
   }
 

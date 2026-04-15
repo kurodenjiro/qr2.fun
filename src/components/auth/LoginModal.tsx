@@ -1,7 +1,7 @@
 "use client";
 
-import { useConnect as useWagmiConnect } from "wagmi";
 import { useState, useEffect } from "react";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface LoginModalProps {
@@ -10,18 +10,7 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
-  const { connect: wagmiConnect, connectors: wagmiConnectors } = useWagmiConnect();
-
-  const handleCeloConnect = () => {
-    // MiniPay is 'injected'
-    const injected = wagmiConnectors.find((c) => c.id === "injected");
-    if (injected) {
-      wagmiConnect({ connector: injected });
-      onClose();
-    } else {
-      alert("MiniPay / Injected wallet not detected.");
-    }
-  };
+  const { openConnectModal } = useConnectModal();
 
   const [isClient, setIsClient] = useState(false);
 
@@ -54,21 +43,29 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         
         <div className="space-y-12 relative">
           <div className="space-y-3">
-            <div className="font-label text-primary text-[11px] tracking-[0.6em] uppercase opacity-70">SYST_SECURE_LINK // u.01</div>
-            <h2 className="text-6xl font-black font-headline tracking-tighter italic uppercase text-white leading-[0.9]">IDENT_SYNC</h2>
+            <div className="font-label text-primary text-[11px] tracking-[0.6em] uppercase opacity-70">WAGMI // u.01</div>
+            <h2 className="text-6xl font-black font-headline tracking-tighter italic uppercase text-white leading-[0.9]">WAGMI</h2>
           </div>
 
           <div className="flex flex-col gap-8">
-            {/* Celo / MiniPay Section */}
-            <button 
-              onClick={handleCeloConnect}
+            <button
+              onClick={() => {
+                openConnectModal?.();
+                onClose();
+              }}
               className="w-full group relative flex items-center justify-between p-8 bg-zinc-900 border border-zinc-800 hover:border-primary transition-all duration-300"
             >
               <div className="space-y-1 text-left relative z-10">
-                <div className="font-headline font-bold text-2xl italic text-white uppercase group-hover:text-primary transition-colors">MINIPAY_OS</div>
-                <div className="font-label text-[10px] text-zinc-500 uppercase tracking-widest">ECOSYSTEM: CELO_STABILITY_PROTOCOL</div>
+                <div className="font-headline font-bold text-2xl italic text-white uppercase group-hover:text-primary transition-colors">
+                  WAGMI
+                </div>
+                <div className="font-label text-[10px] text-zinc-500 uppercase tracking-widest">
+                  WALLET: Celo / WalletConnect / Injected
+                </div>
               </div>
-              <span className="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors relative z-10 text-4xl">account_balance_wallet</span>
+              <span className="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors relative z-10 text-4xl">
+                account_balance_wallet
+              </span>
               <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="absolute bottom-0 left-0 w-0 h-1 bg-primary group-hover:w-full transition-all duration-700"></div>
             </button>
@@ -79,7 +76,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             onClick={onClose}
             className="w-full py-6 font-label text-[13px] text-zinc-600 hover:text-white uppercase tracking-[0.5em] transition-all hover:bg-white/5"
           >
-            [ ABORT_IDENT_STREAMS ]
+            [ ABORT_WAGMI_STREAMS ]
           </button>
         </div>
       </motion.div>

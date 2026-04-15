@@ -3,12 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAccount as useWagmiAccount } from "wagmi";
-import LoginModal from "@/components/auth/LoginModal";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export default function PlaygroundChat() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  
   const { isConnected: isWagmiConnected } = useWagmiAccount();
+  const { openConnectModal } = useConnectModal();
   const isConnected = isWagmiConnected;
 
   const [messages] = useState([
@@ -232,12 +231,11 @@ export default function PlaygroundChat() {
             </div>
             
             <button 
-              onClick={() => setIsLoginModalOpen(true)}
+              onClick={() => openConnectModal?.()}
               className="px-10 py-5 bg-primary text-on-primary font-headline font-bold tracking-widest text-xl hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(143,245,255,0.3)] italic uppercase"
             >
-              INITIALIZE_SYNC [ BOLT ]
+              WAGMI
             </button>
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
           </div>
         </div>
       )}
