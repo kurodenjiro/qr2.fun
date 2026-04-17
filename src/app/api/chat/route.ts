@@ -1,5 +1,5 @@
 import { desc, eq } from "drizzle-orm";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText } from "ai";
 import { db } from "@/db";
 import { twitterProfiles, twitterStyleAnalyses, twitterTweetEmbeddings } from "@/db/schema";
@@ -120,6 +120,10 @@ export async function POST(req: Request) {
 
   const context = await getAgentContext(handle ?? "");
   const modelMessages = await convertToModelMessages(messages);
+
+  const openai = createOpenAI({
+    apiKey: process.env.AI_GATEWAY_API_KEY || "",
+  });
 
   const result = streamText({
     model: openai("gpt-4o-mini"),

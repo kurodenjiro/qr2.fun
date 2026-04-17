@@ -1,7 +1,11 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { embed, generateText } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const getOpenAI = () => createOpenAI({
+  apiKey: process.env.AI_GATEWAY_API_KEY || "",
+});
 import { ErrorRateLimitStrategy, Scraper } from "@the-convocation/twitter-scraper";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";
@@ -553,7 +557,7 @@ async function saveTweetEmbeddings(handle: string, topic: string, tweets: Tweet[
   const results = await Promise.allSettled(
     tweets.map(async (tweet) => {
       const { embedding } = await embed({
-        model: openai.embedding(TWEET_EMBEDDING_MODEL),
+        model: 'openai/text-embedding-3-small',
         value: buildTweetEmbeddingInput(handle, topic, tweet),
       });
 
@@ -587,13 +591,13 @@ async function saveTweetEmbeddings(handle: string, topic: string, tweets: Tweet[
 async function analyzeWritingStyle(handle: string, topic: string, tweets: Tweet[]): Promise<StyleAnalysisResult> {
   const fallback = fallbackStyleAnalysis(handle, topic, tweets);
 
-  if (!process.env.OPENAI_API_KEY?.trim()) {
+  if (!process.env.AI_GATEWAY_API_KEY?.trim()) {
     return fallback;
   }
 
   try {
     const result = await generateText({
-      model: openai(STYLE_MODEL),
+      model: 'openai/gpt-5.4',
       temperature: 0.2,
       system:
         "You analyze tweet writing style for downstream agents. Return only strict JSON and no markdown.",
@@ -649,10 +653,19 @@ async function saveStyleAnalysis(
     .filter(Boolean)
     .join("\n");
 
-  const { embedding } = await embed({
-    model: openai.embedding(TWEET_EMBEDDING_MODEL),
-    value: profileEmbeddingSource,
-  });
+  let embedding = "[0]";
+
+  if (process.env.AI_GATEWAY_API_KEY?.trim()) {
+    try {
+      const response = await embed({
+        model: 'openai/text-embedding-3-small',
+        value: profileEmbeddingSource,
+      });
+      embedding = JSON.stringify(response.embedding);
+    } catch (err) {
+      console.warn("Failed to generate embedding during saveStyleAnalysis, using fallback", err);
+    }
+  }
 
   await db.insert(twitterStyleAnalyses).values({
     id: randomUUID(),
@@ -716,7 +729,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Handle required" }, { status: 400 });
   }
 
-  const cleanHandle = handle.replace(/^@/, "").trim();
+  const cleanHandle = handle.replace(/^@/, "").trim().toLowerCase();
 
   try {
     await ensureTwitterVectorTables();
@@ -735,11 +748,13 @@ export async function GET(request: Request) {
 
     const analysis = await analyzeWritingStyle(cleanHandle, topic, selectedTweets);
     let tweetEmbeddingCount = 0;
-    let profileSaved = false;
-    if (process.env.OPENAI_API_KEY?.trim()) {
+
+    // Always save the analysis (using fallback values if needed) so the UI has data
+    await saveStyleAnalysis(cleanHandle, topic, selectedTweets, analysis, profile.avatar ?? null);
+    const profileSaved = true;
+
+    if (process.env.AI_GATEWAY_API_KEY?.trim()) {
       tweetEmbeddingCount = await saveTweetEmbeddings(cleanHandle, topic, selectedTweets);
-      await saveStyleAnalysis(cleanHandle, topic, selectedTweets, analysis, profile.avatar ?? null);
-      profileSaved = true;
     }
 
     return NextResponse.json({
