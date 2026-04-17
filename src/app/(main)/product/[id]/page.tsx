@@ -37,7 +37,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* Product Gallery */}
         <div className="lg:col-span-7 flex flex-col gap-4">
           <div className="relative bg-surface-container-low aspect-[4/5] overflow-hidden border border-zinc-800 transition-all duration-300">
             <TShirtPreviewStage
@@ -50,21 +49,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               showMetadata
               className="h-full"
             />
-          </div>
-          
-          <div className="grid grid-cols-4 gap-4">
-            <div className="aspect-square bg-surface-container-high border border-zinc-800 overflow-hidden opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
-              <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7FV0v3XP7r_ol5FFiwt2EuqKPJzggXRc3gr3M_KecC1PaWKglWzuFsqkcrbH0UdO0gdw8d-FxCldW_wGCgzYRb5FyxRccLtaGtjPHXkGhPKQMQVOaq67LC2DGAnQDd2FTem3bYGwbNDhOTp2pQbYBj2gAwGQQQwQs8bmHogkD9h6aWWc1J__9yPPiN9VaO_m-Chst8eYbH74emXHf9aUlGG5-jQNjP_aTdV4wQfEqBtmXGDgaZaU85UmCMc6vXTSVUsjGAo4xQbY" alt="Detail 1" />
-            </div>
-            <div className="aspect-square bg-surface-container-high border border-zinc-800 overflow-hidden opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
-              <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt4iffyqf-X5rNg4r9bYMZZHdxfZqKfvLW2bmpMzXCCeWYc6Gvzx0WPx2BLSfoHgCH7Pj64MHu_tabkyKsRbFtxeSUpy13d9y5ArF4hI6fN2D5_uXb9qJFMv2Kx0jViMSCbid4ZuVPs0BLnDKL534t135VydBgbBbFi6pPE_9s4Th06SrDTe5yWZx65zWO6IAhWuD0bik8xC4XBMWHzz-jiRyxBkRFT3QTPhV--_8zt_JLNgLgzfJBFbmwgWjEFne3PsClVuE9hH8" alt="Detail 2" />
-            </div>
-            <div className="aspect-square bg-surface-container-high border border-zinc-800 overflow-hidden opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
-              <img className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmA_Qw1v02Eu8nusdjzNbLa8HOoX6gMCCI6lAiolPHvBjbeZ-HiZ9u-PSNyYvNcfdNnBwwhNIsFeRnZxt_v54d52_r2N0OSzGXVEuFFRlYrXZx3h4K4dJ6Bukp7m-H7NOxChIMH7cIeLGFEtKKUDG-AJ6cRB2Z4M9n-sVjXXIYpOHAY589kN-urwwyLLWMVVjQxuNmKp28Ncy5LP5npudRD8CST-twJlrXMZmVOiR9PGeh0sg86ZK8l38FP_gG1FDFZcOXx5XHTzs" alt="Detail 3" />
-            </div>
-            <div className="aspect-square bg-surface-container-high border border-zinc-800 flex items-center justify-center text-zinc-700">
-              <span className="material-symbols-outlined text-3xl">more_horiz</span>
-            </div>
           </div>
         </div>
 

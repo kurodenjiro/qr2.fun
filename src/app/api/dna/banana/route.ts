@@ -3,36 +3,13 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { NextResponse } from "next/server";
 import QRCode from "qrcode";
-import { createGateway, generateText } from "ai";
+import { generateText } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";
 import { artStyles, twitterProfiles } from "@/db/schema";
 
 export const maxDuration = 90;
-function getAIGatewayConfig() {
-  const apiKey = process.env.AI_GATEWAY_API_KEY;
-  if (!apiKey) {
-    throw new Error("AI_GATEWAY_API_KEY is required for Banana generation");
-  }
-  return {
-    apiKey,
-    baseURL:
-      process.env.AI_GATEWAY_BASE_URL ||
-      process.env.AI_GATEWAY_BASE_OPENAI_COMPAT_URL ||
-      "https://ai-gateway.vercel.sh/v3/ai",
-  };
-}
-
-function getGatewayLanguageModel(modelId: string) {
-  const gateway = getAIGatewayConfig();
-  const provider = createGateway({
-    apiKey: gateway.apiKey,
-    baseURL: gateway.baseURL,
-  });
-
-  return provider.languageModel(modelId);
-}
 
 type BananaRequest = {
   handle?: string;
@@ -58,18 +35,6 @@ function normalizeAvatarUrl(url: string) {
   return url.replace(/_normal(\.(?:jpg|jpeg|png|webp))$/i, "$1");
 }
 
-async function fetchImageBuffer(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      "user-agent": "Mozilla/5.0",
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.status}`);
-  }
-  return Buffer.from(await response.arrayBuffer());
-}
-
 function sanitizeErrorMessage(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err ?? "unknown_error");
   return raw.replace(/\s+/g, " ").slice(0, 220);
@@ -77,7 +42,7 @@ function sanitizeErrorMessage(err: unknown): string {
 
 function buildPrompt() {
   return [
-    `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of Image 1, depicting the portrait of the subject in Image 2.`,
+    `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of example-reference.jpg, depicting the portrait of the subject in Image 2.`,
     `The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections.`,
     `The background is pure white.`,
     `Use exactly one QR code, sourced from Image 3, and place it only once in the center of the torso (chest area) as part of the clothing.`,
@@ -133,9 +98,8 @@ export async function POST(request: Request) {
     const styleName = style?.name ?? "DNA_STYLE";
     const styleDescription = style?.description ?? "Monochrome organic pattern";
 
-    const referencePath = join(process.cwd(), "public", "images", "dna", "example-reference.jpg");
-    const referenceBuffer = await readFile(referencePath);
-    const avatarBuffer = await fetchImageBuffer(normalizeAvatarUrl(profile.profileImageUrl));
+    const referenceUrl = new URL("https://qr2.fun/images/dna/example-reference.jpg");
+    const avatarUrl = new URL(normalizeAvatarUrl(profile.profileImageUrl));
     const qrBuffer = await QRCode.toBuffer(qrText, {
       type: "png",
       width: 1024,
@@ -148,14 +112,14 @@ export async function POST(request: Request) {
 
     const prompt = buildPrompt();
     const result = await generateText({
-      model: getGatewayLanguageModel("google/gemini-3.1-flash-image-preview"),
+      model: "google/gemini-3.1-flash-image-preview",
       messages: [
         {
           role: "user",
           content: [
             { type: "text", text: prompt },
-            { type: "image", image: referenceBuffer },
-            { type: "image", image: avatarBuffer },
+            { type: "image", image: referenceUrl },
+            { type: "image", image: avatarUrl },
             { type: "image", image: qrBuffer },
           ],
         },
