@@ -55,7 +55,7 @@ export default function PlaygroundPage() {
   const [artStyles, setArtStyles] = useState<ArtStyle[]>(DEFAULT_ART_STYLES);
   const [amount, setAmount] = useState(1);
   const [price, setPrice] = useState(72);
-  
+
   const { isConnected: isWagmiConnected } = useWagmiAccount();
   const { openConnectModal } = useConnectModal();
   const isConnected = isWagmiConnected;
@@ -133,22 +133,22 @@ export default function PlaygroundPage() {
       setDnaData((current) =>
         current
           ? {
-              ...current,
-              profileImageUrl: result.profileImageUrl ?? current.profileImageUrl ?? profileData?.profileImageUrl ?? null,
-              generatedImageUrl: result.imageUrl,
-              qrCodeDataUrl: result.qrCodeDataUrl ?? current.qrCodeDataUrl,
-            }
+            ...current,
+            profileImageUrl: result.profileImageUrl ?? current.profileImageUrl ?? profileData?.profileImageUrl ?? null,
+            generatedImageUrl: result.imageUrl,
+            qrCodeDataUrl: result.qrCodeDataUrl ?? current.qrCodeDataUrl,
+          }
           : {
-              profileImageUrl: result.profileImageUrl ?? profileData?.profileImageUrl ?? null,
-              generatedImageUrl: result.imageUrl,
-              qrCodeDataUrl: result.qrCodeDataUrl ?? null,
-              scrapedAt: undefined,
-              tweetCount: undefined,
-              replyCount: undefined,
-              traits: [],
-              metadata: {},
-              rawSample: [],
-            },
+            profileImageUrl: result.profileImageUrl ?? profileData?.profileImageUrl ?? null,
+            generatedImageUrl: result.imageUrl,
+            qrCodeDataUrl: result.qrCodeDataUrl ?? null,
+            scrapedAt: undefined,
+            tweetCount: undefined,
+            replyCount: undefined,
+            traits: [],
+            metadata: {},
+            rawSample: [],
+          },
       );
     } catch (err) {
       console.error("Artwork generation failed:", err);
@@ -160,32 +160,32 @@ export default function PlaygroundPage() {
   const handleConfirmGeneration = async () => {
     setIsSaving(true);
     try {
-        const normalizedAmount = Math.max(1, Math.floor(amount || 1));
-        const normalizedPrice = Math.max(1, Number(price) || 72);
-        const designDnaData = {
-          ...(dnaData || { status: "UNSYNCED" }),
-          amount: normalizedAmount,
-          price: normalizedPrice,
-        };
-        const res = await fetch("/api/designs/save", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                handle: handle.trim(),
-                type: selectedType,
-                styleId: selectedStyle,
-                dnaData: designDnaData,
-                qrUrl: `https://qr2.fun/a/${handle.trim() || 'anonymous'}`
-            })
-        });
-        const result = await res.json();
-        if (result.success) {
-            window.location.href = `/product/${result.id}`;
-        }
+      const normalizedAmount = Math.max(1, Math.floor(amount || 1));
+      const normalizedPrice = Math.max(1, Number(price) || 72);
+      const designDnaData = {
+        ...(dnaData || { status: "UNSYNCED" }),
+        amount: normalizedAmount,
+        price: normalizedPrice,
+      };
+      const res = await fetch("/api/designs/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          handle: handle.trim(),
+          type: selectedType,
+          styleId: selectedStyle,
+          dnaData: designDnaData,
+          qrUrl: `https://qr2.fun/a/${handle.trim() || 'anonymous'}`
+        })
+      });
+      const result = await res.json();
+      if (result.success) {
+        window.location.href = `/product/${result.id}`;
+      }
     } catch (err) {
-        console.error("Save failed:", err);
+      console.error("Save failed:", err);
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
@@ -220,14 +220,14 @@ export default function PlaygroundPage() {
             </div>
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-headline text-lg italic">@</div>
-              <input 
+              <input
                 value={handle}
                 onChange={(e) => setHandle(e.target.value)}
-                className="w-full bg-surface-container-low border-b-2 border-zinc-800 py-4 pl-10 pr-24 text-primary font-headline focus:ring-0 focus:border-primary transition-all underline-none outline-none" 
-                placeholder="your_handle" 
+                className="w-full bg-surface-container-low border-b-2 border-zinc-800 py-4 pl-10 pr-24 text-primary font-headline focus:ring-0 focus:border-primary transition-all underline-none outline-none"
+                placeholder="your_handle"
                 type="text"
               />
-              <button 
+              <button
                 onClick={handleSyncHandle}
                 disabled={isSyncing || !handle}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 font-headline text-xs italic tracking-widest transition-all disabled:opacity-50"
@@ -236,54 +236,54 @@ export default function PlaygroundPage() {
               </button>
             </div>
             {dnaData && (
-                <div className="bg-surface-container-high/50 p-4 border border-zinc-800/50 space-y-3">
-                    <div className="flex justify-between items-center text-[8px] font-label text-zinc-500 uppercase tracking-widest">
-                        <span>Neural_Profile: {dnaData.scrapedAt ? "LIVE_SCRAPED" : "ACTIVE"}</span>
-                        <span>{dnaData.metadata.node}</span>
-                    </div>
-                    {/* Scrape stats */}
-                    {(dnaData.tweetCount ?? 0) > 0 && (
-                      <div className="flex gap-4 text-[7px] font-label uppercase tracking-widest">
-                        <span className="text-zinc-600">Posts: <span className="text-primary">{dnaData.tweetCount}</span></span>
-                        <span className="text-zinc-600">Replies: <span className="text-secondary">{dnaData.replyCount}</span></span>
-                        <span className="text-zinc-600">Avg_Eng: <span className="text-zinc-400">{dnaData.metadata.avg_engagement}</span></span>
-                      </div>
-                    )}
-                    {/* Trait bars */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {dnaData.traits.map((trait) => (
-                            <div key={trait.label} className="space-y-1">
-                                <div className="flex justify-between text-[7px] font-label text-zinc-600 uppercase">
-                                    <span>{trait.label}</span>
-                                    <span>{trait.value}%</span>
-                                </div>
-                                <div className="h-0.5 bg-zinc-900 w-full">
-                                    <div className="h-full bg-primary transition-all duration-700" style={{ width: `${trait.value}%` }} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    {/* Top words */}
-                    {topWords.length > 0 && (
-                      <div className="space-y-1">
-                        <div className="text-[7px] font-label text-zinc-600 uppercase tracking-widest">Signal_Keywords</div>
-                        <div className="flex flex-wrap gap-1">
-                          {topWords.map((w: string) => (
-                            <span key={w} className="text-[7px] font-label bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 text-primary uppercase tracking-wide">{w}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {/* Raw sample tweets */}
-                    {rawSample.length > 0 && (
-                      <div className="space-y-1">
-                        <div className="text-[7px] font-label text-zinc-600 uppercase tracking-widest">Signal_Sample</div>
-                        {rawSample.map((t: string, i: number) => (
-                          <div key={i} className="text-[7px] font-label text-zinc-500 border-l border-zinc-800 pl-2 leading-relaxed line-clamp-1">{t}</div>
-                        ))}
-                      </div>
-                    )}
+              <div className="bg-surface-container-high/50 p-4 border border-zinc-800/50 space-y-3">
+                <div className="flex justify-between items-center text-[8px] font-label text-zinc-500 uppercase tracking-widest">
+                  <span>Neural_Profile: {dnaData.scrapedAt ? "LIVE_SCRAPED" : "ACTIVE"}</span>
+                  <span>{dnaData.metadata.node}</span>
                 </div>
+                {/* Scrape stats */}
+                {(dnaData.tweetCount ?? 0) > 0 && (
+                  <div className="flex gap-4 text-[7px] font-label uppercase tracking-widest">
+                    <span className="text-zinc-600">Posts: <span className="text-primary">{dnaData.tweetCount}</span></span>
+                    <span className="text-zinc-600">Replies: <span className="text-secondary">{dnaData.replyCount}</span></span>
+                    <span className="text-zinc-600">Avg_Eng: <span className="text-zinc-400">{dnaData.metadata.avg_engagement}</span></span>
+                  </div>
+                )}
+                {/* Trait bars */}
+                <div className="grid grid-cols-2 gap-4">
+                  {dnaData.traits.map((trait) => (
+                    <div key={trait.label} className="space-y-1">
+                      <div className="flex justify-between text-[7px] font-label text-zinc-600 uppercase">
+                        <span>{trait.label}</span>
+                        <span>{trait.value}%</span>
+                      </div>
+                      <div className="h-0.5 bg-zinc-900 w-full">
+                        <div className="h-full bg-primary transition-all duration-700" style={{ width: `${trait.value}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Top words */}
+                {topWords.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="text-[7px] font-label text-zinc-600 uppercase tracking-widest">Signal_Keywords</div>
+                    <div className="flex flex-wrap gap-1">
+                      {topWords.map((w: string) => (
+                        <span key={w} className="text-[7px] font-label bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 text-primary uppercase tracking-wide">{w}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Raw sample tweets */}
+                {rawSample.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="text-[7px] font-label text-zinc-600 uppercase tracking-widest">Signal_Sample</div>
+                    {rawSample.map((t: string, i: number) => (
+                      <div key={i} className="text-[7px] font-label text-zinc-500 border-l border-zinc-800 pl-2 leading-relaxed line-clamp-1">{t}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
           </section>
@@ -292,7 +292,7 @@ export default function PlaygroundPage() {
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Choose Art Style</label>
-                  <Link href="/playground/styles/upload" className="font-label text-[10px] tracking-widest uppercase text-secondary hover:text-primary">
+              <Link href="/playground/styles/upload" className="font-label text-[10px] tracking-widest uppercase text-secondary hover:text-primary">
                 Upload Style
               </Link>
             </div>
@@ -336,7 +336,7 @@ export default function PlaygroundPage() {
           <section className="space-y-4">
             <label className="font-label text-[10px] tracking-[0.2em] text-primary uppercase font-bold">Product Setup</label>
             <div className="grid grid-cols-2 gap-4">
-              <button 
+              <button
                 onClick={() => setSelectedType('t-shirt')}
                 className={`border-2 p-6 text-left transition-all ${selectedType === 't-shirt' ? 'border-primary bg-surface-container-high' : 'border-zinc-800 bg-surface-container-low hover:border-zinc-600'}`}
               >
@@ -347,7 +347,7 @@ export default function PlaygroundPage() {
                 <div className={`font-headline font-bold text-lg italic ${selectedType === 't-shirt' ? 'text-primary' : 'text-zinc-500'}`}>T-Shirt</div>
                 <div className="font-label text-[10px] text-zinc-600 uppercase mt-1">Lightweight Core</div>
               </button>
-              <button 
+              <button
                 onClick={() => setSelectedType('hoodie')}
                 className={`border-2 p-6 text-left transition-all ${selectedType === 'hoodie' ? 'border-primary bg-surface-container-high' : 'border-zinc-800 bg-surface-container-low hover:border-zinc-600'}`}
               >
@@ -410,7 +410,7 @@ export default function PlaygroundPage() {
             <div className="hidden sm:block absolute top-6 right-6 border-r border-t border-primary/40 w-12 h-12"></div>
             <div className="hidden sm:block absolute bottom-6 left-6 border-l border-b border-primary/40 w-12 h-12"></div>
             <div className="hidden sm:block absolute bottom-6 right-6 border-r border-b border-primary/40 w-12 h-12"></div>
-            
+
             <div className="hidden sm:flex absolute top-8 left-1/2 -translate-x-1/2 items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
               <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live Preview</span>
@@ -444,10 +444,10 @@ export default function PlaygroundPage() {
 
           {/* Action Bar */}
           <div className="mt-4 grid grid-cols-1 gap-4">
-            <button 
-                onClick={handleConfirmGeneration}
-                disabled={isSaving || !dnaData?.generatedImageUrl}
-                className="flex items-center justify-center gap-3 bg-primary text-on-primary py-5 font-headline font-bold tracking-widest hover:bg-primary-container transition-all uppercase shadow-[0_0_25px_rgba(143,245,255,0.4)] italic disabled:opacity-50 disabled:cursor-not-allowed"
+            <button
+              onClick={handleConfirmGeneration}
+              disabled={isSaving || !dnaData?.generatedImageUrl}
+              className="flex items-center justify-center gap-3 bg-primary text-on-primary py-5 font-headline font-bold tracking-widest hover:bg-primary-container transition-all uppercase shadow-[0_0_25px_rgba(143,245,255,0.4)] italic disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSaving ? "Saving..." : "Create Product"} <span className="material-symbols-outlined font-bold">bolt</span>
             </button>
@@ -478,8 +478,8 @@ export default function PlaygroundPage() {
               <h2 className="text-5xl font-black font-headline tracking-tighter italic uppercase text-white leading-none">UPLINK_REQUIRED</h2>
               <p className="text-zinc-500 font-label text-xs uppercase tracking-widest max-w-sm mx-auto">Establish a secure multi-chain identity sync to access the Forge interface.</p>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => openConnectModal?.()}
               className="px-10 py-5 bg-primary text-on-primary font-headline font-bold tracking-widest text-xl hover:bg-primary-container transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(143,245,255,0.3)] italic uppercase"
             >

@@ -77,10 +77,10 @@ function sanitizeErrorMessage(err: unknown): string {
 
 function buildPrompt() {
   return [
-    `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of example.jpg, depicting the portrait of RegenRene (RegenRene.jpg).`,
+    `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of Image 1, depicting the portrait of the subject in Image 2.`,
     `The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections.`,
     `The background is pure white.`,
-    `Use exactly one QR code, sourced from qr2r.png, and place it only once in the center of the torso (chest area) as part of the clothing.`,
+    `Use exactly one QR code, sourced from Image 3, and place it only once in the center of the torso (chest area) as part of the clothing.`,
     `Do not create any second QR code, duplicate code fragment, sticker, patch, label, poster, or floating square anywhere else in the composition.`,
     `Do not place any QR code element on the face, hair, neck, shoulders, background, or outside the garment area.`,
     `The composition of the subject's clothing is central: the single QR code is integrated as a non-distinct garment element in the chest area.`,
@@ -88,11 +88,11 @@ function buildPrompt() {
     `Its peripheral squares dissolve, fracture, and bleed seamlessly into the surrounding integrated minimalist abstract ink wash patterns and splatters.`,
     `These surrounding ink elements appear to grow out of and merge with the QR code modules, creating a single, unified textured garment that flows dynamically around the three-dimensional curves of the body.`,
     `Avoid collage behavior, taped-paper overlays, print mockup stickers, or duplicated reference elements.`,
-    `The sparse facial features of RegenRene remain minimally integrated at the neck with the surrounding patterns.`,
+    `The sparse facial features of the subject remain minimally integrated at the neck with the surrounding patterns.`,
     `All lines are defined and confident.`,
     `Generate exactly one final image and keep any text response minimal.`,
     ``,
-    `Input images: 1) /Users/mac/dev/qr2.fun/public/images/dna/example-reference.jpg, 2) Twitter avatar image fetched from the synced profile, 3) QR code image generated from the current qrText`,
+    `Input images: 1) Reference art style, 2) Avatar portrait, 3) QR code`,
     `Create a 2:3 portrait composition suitable for apparel print.`,
   ].join("\n");
 }
@@ -148,7 +148,7 @@ export async function POST(request: Request) {
 
     const prompt = buildPrompt();
     const result = await generateText({
-      model: getGatewayLanguageModel("google/gemini-2.5-flash-image"),
+      model: getGatewayLanguageModel("google/gemini-3.1-flash-image-preview"),
       messages: [
         {
           role: "user",
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
         name: styleName,
         description: styleDescription,
       },
-      model: "google/gemini-2.5-flash-image",
+      model: "google/gemini-3.1-flash-image-preview",
       responseText: result.text || null,
     });
   } catch (error) {
