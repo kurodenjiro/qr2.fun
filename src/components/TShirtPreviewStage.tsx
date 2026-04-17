@@ -44,6 +44,23 @@ const shirtColorByType: Record<TShirtPreviewStageProps["type"], string> = {
   hoodie: "#232830",
 };
 
+const chestPrintLayout: Record<
+  TShirtPreviewStageProps["type"],
+  {
+    position: [number, number, number];
+    scale: number;
+  }
+> = {
+  "t-shirt": {
+    position: [0, 0.03, 0.15],
+    scale: 0.28,
+  },
+  hoodie: {
+    position: [0, 0.02, 0.15],
+    scale: 0.31,
+  },
+};
+
 function ShirtModel({
   type,
   artworkSrc,
@@ -51,9 +68,10 @@ function ShirtModel({
   qrCodeSrc,
 }: Pick<TShirtPreviewStageProps, "type" | "artworkSrc" | "fallbackArtworkSrc" | "qrCodeSrc">) {
   const { nodes, materials } = useGLTF("/shirt_baked.glb") as unknown as ShirtGLTF;
-  const fullTexture = useTexture(artworkSrc || fallbackArtworkSrc || "/images/dna/example-reference.jpg");
+  const artworkTexture = useTexture(artworkSrc || fallbackArtworkSrc || "/images/dna/example-reference.jpg");
   const shirtColor = shirtColorByType[type];
   const shirtMaterial = useMemo(() => materials.lambert1.clone(), [materials.lambert1]);
+  const chestPrint = chestPrintLayout[type];
 
   useFrame((_, delta) => {
     easing.dampC(shirtMaterial.color, shirtColor, 0.25, delta);
@@ -71,13 +89,13 @@ function ShirtModel({
       >
         {(artworkSrc || fallbackArtworkSrc) && (
           <Decal
-            position={[0, 0, 0]}
+            position={chestPrint.position}
             rotation={[0, 0, 0]}
-            scale={1}
-            map={fullTexture}
+            scale={chestPrint.scale}
+            map={artworkTexture}
             anisotropy={16}
             depthTest={false}
-            depthWrite={false}
+            depthWrite
           />
         )}
 
@@ -94,8 +112,8 @@ function CameraRig({ children, compact = false }: { children: ReactNode; compact
     const isMobile = window.innerWidth <= 600;
     const targetPosition: [number, number, number] = compact
       ? isMobile
-        ? [0, 0.1, 3.2]
-        : [0, 0.04, 2.8]
+        ? [0, 0.12, 3.55]
+        : [0, 0.06, 3.05]
       : isMobile
         ? [0, 0.05, 2.45]
         : [0, 0, 2.1];
@@ -131,31 +149,15 @@ function QrDecal({ src }: { src: string }) {
   );
 }
 
-function ShirtFallback({
-  type,
-  baseMockupSrc,
-}: Pick<TShirtPreviewStageProps, "type" | "baseMockupSrc">) {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <img
-        src={baseMockupSrc}
-        alt={`${type} mockup`}
-        className="w-[78%] max-w-[24rem] object-contain opacity-80 grayscale"
-      />
-    </div>
-  );
-}
-
 function Scene({
   type,
-  baseMockupSrc,
   artworkSrc,
   fallbackArtworkSrc,
   qrCodeSrc,
   compact,
 }: Pick<
   TShirtPreviewStageProps,
-  "type" | "baseMockupSrc" | "artworkSrc" | "fallbackArtworkSrc" | "qrCodeSrc" | "compact"
+  "type" | "artworkSrc" | "fallbackArtworkSrc" | "qrCodeSrc" | "compact"
 >) {
   return (
     <Canvas
@@ -168,7 +170,7 @@ function Scene({
       <ambientLight intensity={0.6} />
       <Environment preset="city" background={false} />
 
-      <Suspense fallback={<ShirtFallback type={type} baseMockupSrc={baseMockupSrc} />}>
+      <Suspense fallback={null}>
         <CameraRig compact={compact}>
           <AccumulativeShadows
             temporal
@@ -184,9 +186,9 @@ function Scene({
 
           <Center>
             <group
-              position={compact ? [0, -0.32, 0] : [0, -0.2, 0]}
+              position={compact ? [0, -0.36, 0] : [0, -0.2, 0]}
               rotation={[0, -0.1, 0]}
-              scale={compact ? 0.82 : 1}
+              scale={compact ? 0.72 : 1}
             >
               <ShirtModel
                 type={type}
@@ -204,7 +206,6 @@ function Scene({
 
 export default function TShirtPreviewStage({
   type,
-  baseMockupSrc,
   artworkSrc,
   fallbackArtworkSrc,
   qrCodeSrc,
@@ -233,7 +234,6 @@ export default function TShirtPreviewStage({
       <div className="absolute inset-0">
         <Scene
           type={type}
-          baseMockupSrc={baseMockupSrc}
           artworkSrc={artworkSrc}
           fallbackArtworkSrc={fallbackArtworkSrc}
           qrCodeSrc={qrCodeSrc}

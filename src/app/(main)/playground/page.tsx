@@ -411,7 +411,7 @@ export default function PlaygroundPage() {
 
         {/* Right Column: Live Preview */}
         <div className="col-span-12 lg:col-span-7 lg:sticky lg:top-24 h-fit">
-          <div className="relative bg-surface-container-highest aspect-[4/5] flex items-center justify-center overflow-hidden border border-zinc-800/30">
+          <div className="relative bg-surface-container-highest min-h-[30rem] sm:min-h-[34rem] lg:min-h-[38rem] flex items-center justify-center overflow-hidden border border-zinc-800/30">
             {/* HUD Elements */}
             <div className="hidden sm:block absolute top-6 left-6 border-l border-t border-primary/40 w-12 h-12"></div>
             <div className="hidden sm:block absolute top-6 right-6 border-r border-t border-primary/40 w-12 h-12"></div>
@@ -423,7 +423,7 @@ export default function PlaygroundPage() {
               <span className="font-label text-[10px] tracking-[0.3em] text-secondary uppercase font-bold">Live Preview</span>
             </div>
 
-            <div className="relative w-full h-full p-4 sm:p-6">
+            <div className="relative w-full max-w-[26rem] sm:max-w-[30rem] lg:max-w-[28rem] xl:max-w-[30rem] aspect-[4/5] p-4 sm:p-6">
               <TShirtPreviewStage
                 type={selectedType as "t-shirt" | "hoodie"}
                 baseMockupSrc={selectedMockupSrc}
