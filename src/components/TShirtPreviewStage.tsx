@@ -93,9 +93,7 @@ function ShirtModel({
             rotation={[0, 0, 0]}
             scale={chestPrint.scale}
             map={artworkTexture}
-            anisotropy={16}
             depthTest={false}
-            depthWrite
           />
         )}
 
@@ -142,9 +140,6 @@ function QrDecal({ src }: { src: string }) {
       rotation={[0, 0, 0]}
       scale={0.18}
       map={qrTexture}
-      transparent
-      depthTest
-      depthWrite={false}
     />
   );
 }
