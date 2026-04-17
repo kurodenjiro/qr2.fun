@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-
 type TwitterAgentChatProps = {
   handle: string;
   displayName?: string | null;
@@ -19,7 +18,6 @@ export default function TwitterAgentChat({
   profileBio,
   styleSummary,
 }: TwitterAgentChatProps) {
-  const [input, setInput] = useState("");
   const suggestedPrompts = useMemo(
     () => [
       `Introduce yourself as @${handle}'s agent.`,
@@ -29,12 +27,13 @@ export default function TwitterAgentChat({
     [handle],
   );
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
       body: { handle },
     }),
   });
+  const [input, setInput] = useState("");
 
   const isLoading = status === "submitted" || status === "streaming";
 
@@ -126,11 +125,10 @@ export default function TwitterAgentChat({
           {messages.map((message) => (
             <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-[85%] border px-4 py-3 text-sm leading-relaxed ${
-                  message.role === "user"
-                    ? "border-primary/30 bg-primary/10 text-primary"
-                    : "border-white/10 bg-surface-container-high text-zinc-200"
-                }`}
+                className={`max-w-[85%] border px-4 py-3 text-sm leading-relaxed ${message.role === "user"
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-white/10 bg-surface-container-high text-zinc-200"
+                  }`}
               >
                 {message.role === "assistant" && (
                   <div className="mb-2 font-label text-[10px] uppercase tracking-[0.24em] text-secondary">
@@ -154,12 +152,13 @@ export default function TwitterAgentChat({
             <input
               value={input}
               onChange={(event) => setInput(event.target.value)}
+              disabled={status !== "ready"}
               placeholder={`Ask @${handle}'s agent...`}
-              className="flex-1 border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition-colors placeholder:text-zinc-600 focus:border-primary/40"
+              className="flex-1 border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 outline-none transition-colors placeholder:text-zinc-600 focus:border-primary/40 disabled:opacity-50"
             />
             <button
               type="submit"
-              disabled={isLoading || !input.trim()}
+              disabled={status !== "ready" || !input.trim()}
               className="bg-primary px-5 py-3 font-headline text-xs font-bold uppercase tracking-[0.18em] text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
             >
               Send
