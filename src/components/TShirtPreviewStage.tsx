@@ -20,7 +20,6 @@ type TShirtPreviewStageProps = {
   artworkSrc?: string | null;
   fallbackArtworkSrc?: string | null;
   profileImageUrl?: string | null;
-  qrCodeSrc?: string | null;
   title?: string;
   subtitle?: string;
   compact?: boolean;
@@ -65,8 +64,7 @@ function ShirtModel({
   type,
   artworkSrc,
   fallbackArtworkSrc,
-  qrCodeSrc,
-}: Pick<TShirtPreviewStageProps, "type" | "artworkSrc" | "fallbackArtworkSrc" | "qrCodeSrc">) {
+}: Pick<TShirtPreviewStageProps, "type" | "artworkSrc" | "fallbackArtworkSrc">) {
   const { nodes, materials } = useGLTF("/shirt_baked.glb") as unknown as ShirtGLTF;
   const artworkTexture = useTexture(artworkSrc || fallbackArtworkSrc || "/images/dna/example-reference.jpg");
   const shirtColor = shirtColorByType[type];
@@ -96,8 +94,6 @@ function ShirtModel({
             depthTest={false}
           />
         )}
-
-        {qrCodeSrc && <QrDecal src={qrCodeSrc} />}
       </mesh>
     </group>
   );
@@ -131,28 +127,14 @@ function CameraRig({ children, compact = false }: { children: ReactNode; compact
   return <group ref={group}>{children}</group>;
 }
 
-function QrDecal({ src }: { src: string }) {
-  const qrTexture = useTexture(src);
-
-  return (
-    <Decal
-      position={[0.07, 0.18, 0.17]}
-      rotation={[0, 0, 0]}
-      scale={0.18}
-      map={qrTexture}
-    />
-  );
-}
-
 function Scene({
   type,
   artworkSrc,
   fallbackArtworkSrc,
-  qrCodeSrc,
   compact,
 }: Pick<
   TShirtPreviewStageProps,
-  "type" | "artworkSrc" | "fallbackArtworkSrc" | "qrCodeSrc" | "compact"
+  "type" | "artworkSrc" | "fallbackArtworkSrc" | "compact"
 >) {
   return (
     <Canvas
@@ -189,7 +171,6 @@ function Scene({
                 type={type}
                 artworkSrc={artworkSrc}
                 fallbackArtworkSrc={fallbackArtworkSrc}
-                qrCodeSrc={qrCodeSrc}
               />
             </group>
           </Center>
@@ -203,7 +184,6 @@ export default function TShirtPreviewStage({
   type,
   artworkSrc,
   fallbackArtworkSrc,
-  qrCodeSrc,
   title = "3D Preview",
   subtitle = "three.js shirt stage",
   compact = false,
@@ -231,7 +211,6 @@ export default function TShirtPreviewStage({
           type={type}
           artworkSrc={artworkSrc}
           fallbackArtworkSrc={fallbackArtworkSrc}
-          qrCodeSrc={qrCodeSrc}
           compact={compact}
         />
       </div>

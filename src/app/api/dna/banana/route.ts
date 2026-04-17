@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { NextResponse } from "next/server";
 import QRCode from "qrcode";
+import { createGateway, generateText } from "ai";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";
@@ -16,8 +17,21 @@ function getAIGatewayConfig() {
   }
   return {
     apiKey,
-    baseUrl: process.env.AI_GATEWAY_BASE_OPENAI_COMPAT_URL || "https://ai-gateway.vercel.sh/v1",
+    baseURL:
+      process.env.AI_GATEWAY_BASE_URL ||
+      process.env.AI_GATEWAY_BASE_OPENAI_COMPAT_URL ||
+      "https://ai-gateway.vercel.sh/v3/ai",
   };
+}
+
+function getGatewayLanguageModel(modelId: string) {
+  const gateway = getAIGatewayConfig();
+  const provider = createGateway({
+    apiKey: gateway.apiKey,
+    baseURL: gateway.baseURL,
+  });
+
+  return provider.languageModel(modelId);
 }
 
 type BananaRequest = {
@@ -66,40 +80,27 @@ function buildPrompt() {
     `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of example.jpg, depicting the portrait of RegenRene (RegenRene.jpg).`,
     `The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections.`,
     `The background is pure white.`,
-    `The composition of the subject's clothing is central: A complex, dense QR code pattern, sourced directly from qr2r.png, is integrated as a non-distinct, integrated element in the center of the torso (chest area).`,
+    `Use exactly one QR code, sourced from qr2r.png, and place it only once in the center of the torso (chest area) as part of the clothing.`,
+    `Do not create any second QR code, duplicate code fragment, sticker, patch, label, poster, or floating square anywhere else in the composition.`,
+    `Do not place any QR code element on the face, hair, neck, shoulders, background, or outside the garment area.`,
+    `The composition of the subject's clothing is central: the single QR code is integrated as a non-distinct garment element in the chest area.`,
     `Crucially, this QR code does not have hard, defined geometric borders.`,
     `Its peripheral squares dissolve, fracture, and bleed seamlessly into the surrounding integrated minimalist abstract ink wash patterns and splatters.`,
     `These surrounding ink elements appear to grow out of and merge with the QR code modules, creating a single, unified textured garment that flows dynamically around the three-dimensional curves of the body.`,
+    `Avoid collage behavior, taped-paper overlays, print mockup stickers, or duplicated reference elements.`,
     `The sparse facial features of RegenRene remain minimally integrated at the neck with the surrounding patterns.`,
     `All lines are defined and confident.`,
+    `Generate exactly one final image and keep any text response minimal.`,
     ``,
     `Input images: 1) /Users/mac/dev/qr2.fun/public/images/dna/example-reference.jpg, 2) Twitter avatar image fetched from the synced profile, 3) QR code image generated from the current qrText`,
     `Create a 2:3 portrait composition suitable for apparel print.`,
   ].join("\n");
 }
 
-function getGeneratedImageBase64(gatewayResponse: unknown): string | null {
-  const response = gatewayResponse as {
-    choices?: Array<{
-      message?: {
-        images?: Array<{
-          image_url?: {
-            url?: string;
-          };
-        }>;
-      };
-    }>;
-  };
-
-  const imageUrl = response.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-  if (!imageUrl || typeof imageUrl !== "string") return null;
-
-  if (imageUrl.startsWith("data:image")) {
-    const [, base64Data] = imageUrl.split(",", 2);
-    return base64Data || null;
-  }
-
-  return null;
+function getGeneratedImageFile(result: {
+  files?: Array<{ mediaType?: string; uint8Array?: Uint8Array; base64?: string }>;
+}) {
+  return result.files?.find((file) => file.mediaType?.startsWith("image/"));
 }
 
 export async function POST(request: Request) {
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as BananaRequest;
     const cleanHandle = normalizeHandle(body.handle ?? "");
     const styleId = body.styleId?.trim() || "";
-    const qrText = body.qrText?.trim() || `https://qr2.fun/${cleanHandle || "anonymous"}`;
+    const qrText = body.qrText?.trim() || `https://qr2.fun/a/${cleanHandle || "anonymous"}`;
 
     if (!cleanHandle) {
       return NextResponse.json({ error: "Handle required" }, { status: 400 });
@@ -146,68 +147,33 @@ export async function POST(request: Request) {
     });
 
     const prompt = buildPrompt();
-    const referenceBase64 = referenceBuffer.toString("base64");
-    const avatarBase64 = avatarBuffer.toString("base64");
-    const qrBase64 = qrBuffer.toString("base64");
-
-    const gateway = getAIGatewayConfig();
-    const aiResponse = await fetch(`${gateway.baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${gateway.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash-image",
-        stream: false,
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: prompt },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${referenceBase64}`,
-                  detail: "high",
-                },
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${avatarBase64}`,
-                  detail: "high",
-                },
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/png;base64,${qrBase64}`,
-                  detail: "high",
-                },
-              },
-            ],
-          },
-        ],
-      }),
+    const result = await generateText({
+      model: getGatewayLanguageModel("google/gemini-2.5-flash-image"),
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            { type: "image", image: referenceBuffer },
+            { type: "image", image: avatarBuffer },
+            { type: "image", image: qrBuffer },
+          ],
+        },
+      ],
     });
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      throw new Error(`AI Gateway request failed: ${aiResponse.status} ${errorText}`);
-    }
-    const response = await aiResponse.json();
-    const imageData = getGeneratedImageBase64(response);
+    const imageFile = getGeneratedImageFile(result);
 
-    if (!imageData) {
-      throw new Error("No image generated by AI Gateway");
+    if (!imageFile?.uint8Array?.length) {
+      throw new Error("No image file returned by AI Gateway response");
     }
 
     const outputDir = join(process.cwd(), "public", "generated", "dna");
     await mkdir(outputDir, { recursive: true });
 
-    const fileName = `${cleanHandle}-${styleId || "dna"}-${Date.now()}-${randomUUID().slice(0, 8)}.png`;
+    const extension = imageFile.mediaType?.split("/")[1] || "png";
+    const fileName = `${cleanHandle}-${styleId || "dna"}-${Date.now()}-${randomUUID().slice(0, 8)}.${extension}`;
     const filePath = join(outputDir, fileName);
-    await writeFile(filePath, Buffer.from(imageData, "base64"));
+    await writeFile(filePath, imageFile.uint8Array);
 
     return NextResponse.json({
       success: true,
@@ -221,6 +187,7 @@ export async function POST(request: Request) {
         description: styleDescription,
       },
       model: "google/gemini-2.5-flash-image",
+      responseText: result.text || null,
     });
   } catch (error) {
     console.error("[Banana image generation failed]", error);

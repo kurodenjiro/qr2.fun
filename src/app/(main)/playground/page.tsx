@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAccount as useWagmiAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import QRCode from "qrcode";
 import { useEffect } from "react";
 import TShirtPreviewStage from "@/components/TShirtPreviewStage";
 
@@ -52,7 +51,6 @@ export default function PlaygroundPage() {
   const [dnaData, setDnaData] = useState<DnaData | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isGeneratingArt, setIsGeneratingArt] = useState(false);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [artStyles, setArtStyles] = useState<ArtStyle[]>(DEFAULT_ART_STYLES);
   const [amount, setAmount] = useState(1);
@@ -94,10 +92,6 @@ export default function PlaygroundPage() {
       const res = await fetch(`/api/dna/twitter?handle=${encodeURIComponent(handle)}`);
       const data = (await res.json()) as DnaData;
       setDnaData(data);
-      
-      // Generate QR Code for qr2.fun/id (using handle as id placeholder for now)
-      const qrData = await QRCode.toDataURL(`https://qr2.fun/${handle}`);
-      setQrCodeDataUrl(qrData);
       return data;
     } catch (err) {
       console.error("Sync failed:", err);
@@ -127,7 +121,7 @@ export default function PlaygroundPage() {
         body: JSON.stringify({
           handle: cleanHandle,
           styleId,
-          qrText: `https://qr2.fun/${cleanHandle}`,
+          qrText: `https://qr2.fun/a/${cleanHandle}`,
         }),
       });
 
@@ -156,7 +150,6 @@ export default function PlaygroundPage() {
               rawSample: [],
             },
       );
-      setQrCodeDataUrl(result.qrCodeDataUrl || "");
     } catch (err) {
       console.error("Artwork generation failed:", err);
     } finally {
@@ -182,7 +175,7 @@ export default function PlaygroundPage() {
                 type: selectedType,
                 styleId: selectedStyle,
                 dnaData: designDnaData,
-                qrUrl: `https://qr2.fun/${handle.trim() || 'anonymous'}`
+                qrUrl: `https://qr2.fun/a/${handle.trim() || 'anonymous'}`
             })
         });
         const result = await res.json();
@@ -429,7 +422,6 @@ export default function PlaygroundPage() {
                 baseMockupSrc={selectedMockupSrc}
                 artworkSrc={selectedArtworkSrc}
                 profileImageUrl={dnaData?.profileImageUrl ?? null}
-                qrCodeSrc={qrCodeDataUrl || dnaData?.qrCodeDataUrl || null}
                 title="LIVE PREVIEW"
                 subtitle="three.js style stage"
                 compact

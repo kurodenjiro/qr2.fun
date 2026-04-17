@@ -45,7 +45,6 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               baseMockupSrc={baseMockupImage}
               artworkSrc={printImage}
               profileImageUrl={dna.profileImageUrl ?? null}
-              qrCodeSrc={dna.qrCodeDataUrl ?? null}
               title={styleName}
               subtitle={design.type === "hoodie" ? "heavy shell" : "light core"}
               showMetadata
