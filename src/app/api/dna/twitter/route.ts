@@ -1,11 +1,7 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { embed, generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
 
-const getOpenAI = () => createOpenAI({
-  apiKey: process.env.AI_GATEWAY_API_KEY || "",
-});
 import { ErrorRateLimitStrategy, Scraper } from "@the-convocation/twitter-scraper";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";

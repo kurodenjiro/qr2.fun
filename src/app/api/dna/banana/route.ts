@@ -1,6 +1,4 @@
 import { randomUUID } from "crypto";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import { join } from "path";
 import { NextResponse } from "next/server";
 import QRCode from "qrcode";
 import { generateText } from "ai";
@@ -38,28 +36,6 @@ function normalizeAvatarUrl(url: string) {
 function sanitizeErrorMessage(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err ?? "unknown_error");
   return raw.replace(/\s+/g, " ").slice(0, 220);
-}
-
-function buildPrompt() {
-  return [
-    `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of example-reference.jpg, depicting the portrait of the subject in Image 2.`,
-    `The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections.`,
-    `The background is pure white.`,
-    `Use exactly one QR code, sourced from Image 3, and place it only once in the center of the torso (chest area) as part of the clothing.`,
-    `Do not create any second QR code, duplicate code fragment, sticker, patch, label, poster, or floating square anywhere else in the composition.`,
-    `Do not place any QR code element on the face, hair, neck, shoulders, background, or outside the garment area.`,
-    `The composition of the subject's clothing is central: the single QR code is integrated as a non-distinct garment element in the chest area.`,
-    `Crucially, this QR code does not have hard, defined geometric borders.`,
-    `Its peripheral squares dissolve, fracture, and bleed seamlessly into the surrounding integrated minimalist abstract ink wash patterns and splatters.`,
-    `These surrounding ink elements appear to grow out of and merge with the QR code modules, creating a single, unified textured garment that flows dynamically around the three-dimensional curves of the body.`,
-    `Avoid collage behavior, taped-paper overlays, print mockup stickers, or duplicated reference elements.`,
-    `The sparse facial features of the subject remain minimally integrated at the neck with the surrounding patterns.`,
-    `All lines are defined and confident.`,
-    `Generate exactly one final image and keep any text response minimal.`,
-    ``,
-    `Input images: 1) Reference art style, 2) Avatar portrait, 3) QR code`,
-    `Create a 2:3 portrait composition suitable for apparel print.`,
-  ].join("\n");
 }
 
 function getGeneratedImageFile(result: {
@@ -111,6 +87,7 @@ export async function POST(request: Request) {
     });
 
     const prompt = `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of Image 1, depicting the portrait of Image 2. The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections. The background is pure white. The composition of the subject's clothing is central: A complex, dense QR code pattern, sourced directly from Image 3, is integrated as a non-distinct, integrated element in the center of the torso (chest area). Crucially, this QR code does not have hard, defined geometric borders. Its peripheral squares dissolve, fracture, and bleed seamlessly into the surrounding integrated minimalist abstract ink wash patterns and splatters. These surrounding ink elements appear to grow out of and merge with the QR code modules, creating a single, unified textured garment that flows dynamically around the three-dimensional curves of the body. The sparse facial features of Image 2 remain minimally integrated at the neck with the surrounding patterns. All lines are defined and confident.`;
+
     const result = await generateText({
       model: "google/gemini-3.1-flash-image-preview",
       messages: [
@@ -125,23 +102,21 @@ export async function POST(request: Request) {
         },
       ],
     });
+
     const imageFile = getGeneratedImageFile(result);
 
     if (!imageFile?.uint8Array?.length) {
+      console.error("[Banana] No image returned", result);
       throw new Error("No image file returned by AI Gateway response");
     }
 
-    const outputDir = join(process.cwd(), "public", "generated", "dna");
-    await mkdir(outputDir, { recursive: true });
-
-    const extension = imageFile.mediaType?.split("/")[1] || "png";
-    const fileName = `${cleanHandle}-${styleId || "dna"}-${Date.now()}-${randomUUID().slice(0, 8)}.${extension}`;
-    const filePath = join(outputDir, fileName);
-    await writeFile(filePath, imageFile.uint8Array);
+    // Convert to Base64 for database storage/direct return (Vercel has read-only FS)
+    const base64Image = Buffer.from(imageFile.uint8Array).toString('base64');
+    const dataUrl = `data:${imageFile.mediaType || 'image/png'};base64,${base64Image}`;
 
     return NextResponse.json({
       success: true,
-      imageUrl: `/generated/dna/${fileName}`,
+      imageUrl: dataUrl,
       qrCodeDataUrl: await QRCode.toDataURL(qrText),
       profileImageUrl: normalizeAvatarUrl(profile.profileImageUrl),
       prompt,
@@ -150,7 +125,7 @@ export async function POST(request: Request) {
         name: styleName,
         description: styleDescription,
       },
-      model: "google/gemini-3.1-flash-image-preview",
+      model: "image-gen-via-gateway",
       responseText: result.text || null,
     });
   } catch (error) {
