@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { convertToModelMessages, streamText } from "ai";
 import { db } from "@/db";
 import { twitterProfiles, twitterStyleAnalyses, twitterTweetEmbeddings } from "@/db/schema";
+import { aiProvider } from "@/lib/ai";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -122,7 +123,7 @@ export async function POST(req: Request) {
 
 
   const result = streamText({
-    model: 'openai/gpt-5.4',
+    model: aiProvider.languageModel('agent-chat'),
     system: buildSystemPrompt(context),
     messages: modelMessages,
   });

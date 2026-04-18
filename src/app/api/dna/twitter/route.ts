@@ -1,14 +1,10 @@
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import { embed, generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-
-const getOpenAI = () => createOpenAI({
-  apiKey: process.env.AI_GATEWAY_API_KEY || "",
-});
 import { ErrorRateLimitStrategy, Scraper } from "@the-convocation/twitter-scraper";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";
+import { aiProvider } from "@/lib/ai";
 import {
   twitterStyleAnalyses,
   twitterProfiles,
@@ -557,7 +553,7 @@ async function saveTweetEmbeddings(handle: string, topic: string, tweets: Tweet[
   const results = await Promise.allSettled(
     tweets.map(async (tweet) => {
       const { embedding } = await embed({
-        model: 'openai/text-embedding-3-small',
+        model: aiProvider.textEmbeddingModel('tweet-embedding'),
         value: buildTweetEmbeddingInput(handle, topic, tweet),
       });
 
@@ -597,7 +593,7 @@ async function analyzeWritingStyle(handle: string, topic: string, tweets: Tweet[
 
   try {
     const result = await generateText({
-      model: 'openai/gpt-5.4',
+      model: aiProvider.languageModel('style-analysis'),
       temperature: 0.2,
       system:
         "You analyze tweet writing style for downstream agents. Return only strict JSON and no markdown.",
@@ -658,7 +654,7 @@ async function saveStyleAnalysis(
   if (process.env.AI_GATEWAY_API_KEY?.trim()) {
     try {
       const response = await embed({
-        model: 'openai/text-embedding-3-small',
+        model: aiProvider.textEmbeddingModel('tweet-embedding'),
         value: profileEmbeddingSource,
       });
       embedding = JSON.stringify(response.embedding);
