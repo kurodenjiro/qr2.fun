@@ -28,7 +28,7 @@ type TwitterProfileRow = {
 };
 
 function normalizeHandle(handle: string) {
-  return handle.replace(/^@/, "").trim();
+  return handle.replace(/^@/, "").trim().toLowerCase();
 }
 
 function normalizeAvatarUrl(url: string) {
