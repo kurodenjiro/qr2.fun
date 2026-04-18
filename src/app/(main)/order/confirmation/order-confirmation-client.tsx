@@ -71,7 +71,7 @@ export default function OrderConfirmationClient() {
     if (!activeOrder) return;
 
     // REPLACE WITH YOUR MERCHANT ADDRESS
-    const merchantAddress = "0xA0Cf6c871c82f913e618d3C6CDb2B6Cb2619251e" as `0x${string}`;
+    const merchantAddress = "0x03fBbA1b1A455d028b074D9abC2b23d3EF786943" as `0x${string}`;
 
     // Select token based on network
     // Mainnet: cUSD (USDm) or USDT? Docs use USDC Mainnet placeholder.
