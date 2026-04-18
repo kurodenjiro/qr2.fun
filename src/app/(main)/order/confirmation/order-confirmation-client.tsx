@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { markOrderPaid } from "@/lib/checkout";
 import { useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import {

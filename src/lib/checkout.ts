@@ -222,3 +222,16 @@ export function saveShippingAddress(orderId: string, address: CheckoutAddress) {
   notifyCheckoutUpdate();
   return nextOrder;
 }
+
+/**
+ * Mark an existing order as paid by setting the paymentMethod to 'wallet'.
+ * Returns the updated order or null if not found.
+ */
+export function markOrderPaid(orderId: string) {
+  const order = getStoredOrder();
+  if (!order || order.id !== orderId) return null;
+  const updated = { ...order, paymentMethod: 'wallet' as const };
+  saveStoredOrder(updated);
+  notifyCheckoutUpdate();
+  return updated;
+}
