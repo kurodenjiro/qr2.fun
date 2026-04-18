@@ -64,6 +64,9 @@ const DEFAULT_CART_SNAPSHOT: CheckoutItem[] = DEFAULT_CART.map((item) => ({ ...i
 let cachedCartRaw: string | null | undefined;
 let cachedCartSnapshot: CheckoutItem[] | undefined;
 
+let cachedOrderRaw: string | null | undefined;
+let cachedOrderSnapshot: CheckoutOrder | null | undefined;
+
 function canUseStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
@@ -196,7 +199,31 @@ export function createOrder(items: CheckoutItem[], paymentMethod: "card" | "wall
 }
 
 export function getStoredOrder() {
-  return readJson<CheckoutOrder | null>(ORDER_KEY, null);
+  if (!canUseStorage()) {
+    return null;
+  }
+
+  const raw = window.localStorage.getItem(ORDER_KEY);
+  if (raw === cachedOrderRaw && cachedOrderSnapshot !== undefined) {
+    return cachedOrderSnapshot;
+  }
+
+  if (!raw) {
+    cachedOrderRaw = null;
+    cachedOrderSnapshot = null;
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as CheckoutOrder;
+    cachedOrderRaw = raw;
+    cachedOrderSnapshot = parsed;
+    return cachedOrderSnapshot;
+  } catch {
+    cachedOrderRaw = null;
+    cachedOrderSnapshot = null;
+    return null;
+  }
 }
 
 export function saveStoredOrder(order: CheckoutOrder) {

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { markOrderPaid } from "@/lib/checkout";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   CheckoutAddress,
@@ -10,7 +9,11 @@ import {
   getStoredOrder,
   saveShippingAddress,
   subscribeToCheckoutUpdates,
+  markOrderPaid,
 } from "@/lib/checkout";
+import { useSendTransaction, useWaitForTransactionReceipt, useChainId } from "wagmi";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { celo, celoSepolia } from "wagmi/chains";
 
 const EMPTY_ADDRESS: CheckoutAddress = {
   fullName: "",
@@ -31,10 +34,25 @@ export default function OrderConfirmationClient() {
     getStoredOrder,
     () => null,
   ) as CheckoutOrder | null;
-  const [address, setAddress] = useState<CheckoutAddress>(() => order?.shippingAddress ?? EMPTY_ADDRESS);
+  const [mounted, setMounted] = useState(false);
+  const [address, setAddress] = useState<CheckoutAddress>(EMPTY_ADDRESS);
   const [isSavingAddress, setIsSavingAddress] = useState(false);
 
-  const activeOrder = order && (!orderId || order.id === orderId) ? order : getStoredOrder();
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && order?.shippingAddress) {
+      setAddress(order.shippingAddress);
+    }
+  }, [mounted, order]);
+  const chainId = useChainId();
+
+  const { data: hash, isPending: isTxPending, sendTransaction, error: txError } = useSendTransaction();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+
+  const activeOrder = mounted && order && (!orderId || order.id === orderId) ? order : (mounted ? getStoredOrder() : null);
   const isAddressSaved = Boolean(activeOrder?.shippingAddress);
   const savedAddress = activeOrder?.shippingAddress ?? address;
   const total = activeOrder?.total ?? 0;
@@ -48,6 +66,40 @@ export default function OrderConfirmationClient() {
     saveShippingAddress(activeOrder.id, address);
     setIsSavingAddress(false);
   };
+
+  const handlePay = async () => {
+    if (!activeOrder) return;
+
+    // REPLACE WITH YOUR MERCHANT ADDRESS
+    const merchantAddress = "0xA0Cf6c871c82f913e618d3C6CDb2B6Cb2619251e" as `0x${string}`;
+
+    // Select token based on network
+    // Mainnet: cUSD (USDm) or USDT? Docs use USDC Mainnet placeholder.
+    // Let's use USDC for Sepolia and USDm (cUSD) for Mainnet as defaults.
+    const isMainnet = chainId === celo.id;
+    const tokenAddress = isMainnet
+      ? "0x765DE816845861e75A25fCA122bb6898B8B1282a" // USDm Mainnet
+      : "0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B"; // USDC Sepolia
+
+    const decimals = isMainnet ? 18 : 6;
+
+    const data = encodeFunctionData({
+      abi: erc20Abi,
+      functionName: "transfer",
+      args: [merchantAddress, parseUnits(activeOrder.total.toString(), decimals)],
+    });
+
+    sendTransaction({
+      to: tokenAddress,
+      data,
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess && activeOrder && activeOrder.paymentMethod === "card") {
+      markOrderPaid(activeOrder.id);
+    }
+  }, [isSuccess, activeOrder]);
 
   return (
     <main className="min-h-screen pt-32 pb-20 px-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
@@ -65,13 +117,24 @@ export default function OrderConfirmationClient() {
             Your payment went through. The final step is to confirm the shipping address so we can route the garment to the right place.
           </p>
           <div className="mt-12 flex flex-wrap gap-4">
-            <Link
-              href="/collections"
-              className="bg-primary text-on-primary px-10 py-4 font-bold tracking-widest text-sm uppercase hover:shadow-[0_0_20px_rgba(143,245,255,0.4)] transition-all active:scale-95 group relative"
-            >
-              <span>BACK TO HUB</span>
-              <div className="absolute -right-2 -bottom-2 w-full h-full border border-primary group-hover:right-0 group-hover:bottom-0 transition-all"></div>
-            </Link>
+            {!mounted || !activeOrder || activeOrder.paymentMethod === "card" ? (
+              <button
+                onClick={handlePay}
+                disabled={!mounted || isTxPending || isConfirming}
+                className="bg-primary text-on-primary px-10 py-4 font-bold tracking-widest text-sm uppercase hover:shadow-[0_0_20px_rgba(143,245,255,0.4)] transition-all active:scale-95 group relative disabled:opacity-50"
+              >
+                <span>{!mounted ? "INITIALIZING..." : isTxPending ? "REQUESTING..." : isConfirming ? "CONFIRMING..." : "PAY WITH MINIPAY"}</span>
+                <div className="absolute -right-2 -bottom-2 w-full h-full border border-primary group-hover:right-0 group-hover:bottom-0 transition-all"></div>
+              </button>
+            ) : (
+              <Link
+                href="/collections"
+                className="bg-primary text-on-primary px-10 py-4 font-bold tracking-widest text-sm uppercase hover:shadow-[0_0_20px_rgba(143,245,255,0.4)] transition-all active:scale-95 group relative"
+              >
+                <span>BACK TO HUB</span>
+                <div className="absolute -right-2 -bottom-2 w-full h-full border border-primary group-hover:right-0 group-hover:bottom-0 transition-all"></div>
+              </Link>
+            )}
             <Link
               href="/cart"
               className="border-2 border-zinc-800 text-zinc-500 px-10 py-4 font-bold tracking-widest text-sm uppercase hover:border-secondary hover:text-secondary transition-all"
@@ -79,6 +142,11 @@ export default function OrderConfirmationClient() {
               EDIT_CART
             </Link>
           </div>
+          {txError && (
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 text-red-500 font-label text-[10px] uppercase tracking-widest">
+              TX_ERROR: {txError.message.slice(0, 100)}...
+            </div>
+          )}
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -104,9 +172,11 @@ export default function OrderConfirmationClient() {
             <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary/40 group-hover:border-primary/80 transition-all"></div>
 
             <div className="font-label text-[10px] tracking-widest text-tertiary mb-4 uppercase">PAYMENT_STATE</div>
-            <div className="text-4xl font-bold font-headline text-zinc-100 italic">{activeOrder ? "PAID" : "NO_ORDER"}</div>
+            <div className="text-4xl font-bold font-headline text-zinc-100 italic">
+              {!mounted ? "---" : (activeOrder ? (activeOrder.paymentMethod === "wallet" ? "PAID" : "AWAITING") : "NO_ORDER")}
+            </div>
             <div className="mt-2 text-zinc-500 font-label text-[10px] uppercase tracking-widest">
-              {activeOrder ? `Method: ${activeOrder.paymentMethod.toUpperCase()} // Ready for address` : "Complete checkout in the cart first."}
+              {!mounted ? "SYNCING..." : (activeOrder ? `Method: ${activeOrder.paymentMethod.toUpperCase()} // Ready for address` : "Complete checkout in the cart first.")}
             </div>
             <div className="absolute right-[-10px] bottom-[-10px] opacity-10 group-hover:opacity-20 transition-opacity">
               <span className="material-symbols-outlined text-9xl">payments</span>
@@ -130,12 +200,12 @@ export default function OrderConfirmationClient() {
                     <img className="w-full h-full object-cover grayscale opacity-60 hover:grayscale-0 transition-all duration-500" src={item.image} alt={item.name} />
                   </div>
                   <div className="flex-1">
-                  <div className="font-bold text-lg tracking-tight font-headline text-zinc-100 italic">{item.name}</div>
-                  <div className="text-[10px] font-label text-zinc-500 uppercase tracking-widest">
+                    <div className="font-bold text-lg tracking-tight font-headline text-zinc-100 italic">{item.name}</div>
+                    <div className="text-[10px] font-label text-zinc-500 uppercase tracking-widest">
                       <span>TYPE: {item.type.toUpperCase()}</span>
                       <span>{" // "}</span>
                       <span>QTY: {String(item.quantity).padStart(2, "0")}</span>
-                  </div>
+                    </div>
                     <div className="text-primary mt-2 font-bold font-headline">${(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                 </div>
