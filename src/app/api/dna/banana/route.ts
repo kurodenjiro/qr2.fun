@@ -4,6 +4,11 @@ import { join } from "path";
 import { NextResponse } from "next/server";
 import QRCode from "qrcode";
 import { generateText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const getOpenAI = () => createOpenAI({
+  apiKey: process.env.AI_GATEWAY_API_KEY || "",
+});
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { ensureTwitterVectorTables } from "@/db/bootstrap";
@@ -112,7 +117,7 @@ export async function POST(request: Request) {
 
     const prompt = `A striking, minimalist high-contrast monochrome ink wash illustration, rendered in the specific artistic style of Image 1, depicting the portrait of Image 2. The focus is on the dramatic, high-contrast ink application and the exceptionally glossy, lacquer-like finish on the hair with dramatic reflections. The background is pure white. The composition of the subject's clothing is central: A complex, dense QR code pattern, sourced directly from Image 3, is integrated as a non-distinct, integrated element in the center of the torso (chest area). Crucially, this QR code does not have hard, defined geometric borders. Its peripheral squares dissolve, fracture, and bleed seamlessly into the surrounding integrated minimalist abstract ink wash patterns and splatters. These surrounding ink elements appear to grow out of and merge with the QR code modules, creating a single, unified textured garment that flows dynamically around the three-dimensional curves of the body. The sparse facial features of Image 2 remain minimally integrated at the neck with the surrounding patterns. All lines are defined and confident.`;
     const result = await generateText({
-      model: "google/gemini-3.1-flash-image-preview",
+      model: getOpenAI()("google/gemini-3.1-flash-image-preview"),
       messages: [
         {
           role: "user",

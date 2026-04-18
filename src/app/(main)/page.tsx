@@ -1,6 +1,30 @@
 import Link from "next/link";
+import { desc, inArray } from "drizzle-orm";
+import { db } from "@/db";
+import { artStyles, designs } from "@/db/schema";
+import { ensureArtStylesTable } from "@/db/bootstrap";
 
-export default function LandingPage() {
+function getDesignRenderData(dnaDataRaw: string): { generatedImageUrl: string | null; price: number | null } {
+  try {
+    const parsed = JSON.parse(dnaDataRaw) as { generatedImageUrl?: string | null; price?: number };
+    const generatedImageUrl =
+      typeof parsed.generatedImageUrl === "string" && parsed.generatedImageUrl.length > 0 ? parsed.generatedImageUrl : null;
+    const price = typeof parsed.price === "number" && Number.isFinite(parsed.price) ? parsed.price : null;
+    return { generatedImageUrl, price };
+  } catch {
+    return { generatedImageUrl: null, price: null };
+  }
+}
+
+export default async function LandingPage() {
+  await ensureArtStylesTable();
+  const latestDrops = await db.select().from(designs).orderBy(desc(designs.createdAt)).limit(3);
+  
+  const styleIds = Array.from(new Set(latestDrops.map((d) => d.styleId)));
+  const styles = styleIds.length > 0
+    ? await db.select().from(artStyles).where(inArray(artStyles.id, styleIds))
+    : [];
+  const styleMap = new Map(styles.map((s) => [s.id, s]));
   return (
     <main className="pt-16 sm:pt-24">
       {/* Hero Section */}
@@ -153,66 +177,45 @@ export default function LandingPage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1 */}
-          <div className="group bg-surface-container-lowest border border-zinc-800 p-4 transition-all hover:bg-surface-container-high">
-            <div className="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
-              <img 
-                alt="Vector Tee" 
-                className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSl3Y55V63oGOTb_F3KAcOxahFjnMyV1aTS6SHLHXF6ed731pzFw-M0efCEaI7IAdlg99ypoKnp0eqhq2YqA6z7gvxm5d-06JDpxB2YcOtRTC2rYUbsRWbdh6CJJOdnFZhUafROHqcNKIkbHlKLmaHAWjidlr0J79oMPI5jFAUdemUgb7HPDW7pAJpBnUc0jD6yjQYWFmsEJZ2l2WovkpTCTiBCN0ZY1yK_CX-WfLkitkaOKUdMLD_x3G69AD24Vl8VimlCV1kgTk" 
-              />
-              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
-                SN: 882-VCTR
-              </div>
+          {latestDrops.length > 0 ? (
+            latestDrops.map((p) => {
+              const style = styleMap.get(p.styleId);
+              const { generatedImageUrl, price } = getDesignRenderData(p.dnaData);
+              const cardImageUrl = generatedImageUrl || "/images/tshirt-mockup.png";
+              const displayPrice = price ?? (p.type === "hoodie" ? 120 : 72);
+              const styleName = style?.name ?? p.styleId;
+
+              return (
+                <Link 
+                  key={p.id}
+                  href={`/product/${p.id}`} 
+                  className="group bg-surface-container-lowest border border-zinc-800 p-4 transition-all hover:bg-surface-container-high"
+                >
+                  <div className="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
+                    <img 
+                      alt={styleName} 
+                      className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" 
+                      src={cardImageUrl} 
+                    />
+                    <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
+                      SN: {p.id.slice(0, 8).toUpperCase()}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-headline font-bold text-lg uppercase text-zinc-100">{styleName.replace(/-/g, "_")}</h4>
+                      <div className="font-label text-[10px] tracking-[0.1em] opacity-40 uppercase">@{p.handle} // {p.type}</div>
+                    </div>
+                    <span className="text-primary font-headline font-bold">${displayPrice}</span>
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <div className="col-span-full py-12 text-center border border-dashed border-zinc-800">
+              <p className="text-zinc-500 font-label text-xs uppercase tracking-widest">No recent drops found</p>
             </div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-headline font-bold text-lg uppercase text-zinc-100">Vector Tee</h4>
-                <div className="font-label text-[10px] tracking-[0.1em] opacity-40 uppercase">LIMITED_RUN_100</div>
-              </div>
-              <span className="text-primary font-headline font-bold">$110</span>
-            </div>
-          </div>
-          {/* Card 2 */}
-          <div className="group bg-surface-container-lowest border border-zinc-800 p-4 transition-all hover:bg-surface-container-high">
-            <div className="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
-              <img 
-                alt="Ghost Shirt" 
-                className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgxp53_yvqlHcTKhbNYM_cUqv3O0A1MiObgSiLm6A5-46FxK9xweJyIYsNJXRItE_BmOyjyYXd8EMCRu1ne8lqxM4Fh-ReeUhd6UQ2JZGz0XUWPNAM-75YDH0HJeBHvp6PoDybptpGT-bIH8nF3DHknl-pjh7XD61BTOcXY9qC5F5KuP_KUm1gf4Ez1CifnqrFntYHJaP-zTzZJmdPYe1Oawlhq7SgM8Uh9tqqyDnXO9smjN1-yPzGvB82THG_RrpgIk1twRMk8JY" 
-              />
-              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
-                SN: 004-GHST
-              </div>
-            </div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-headline font-bold text-lg uppercase text-zinc-100">Ghost Shirt</h4>
-                <div className="font-label text-[10px] tracking-[0.1em] opacity-40 uppercase">LIMITED_RUN_50</div>
-              </div>
-              <span className="text-primary font-headline font-bold">$185</span>
-            </div>
-          </div>
-          {/* Card 3 */}
-          <div className="group bg-surface-container-lowest border border-zinc-800 p-4 transition-all hover:bg-surface-container-high">
-            <div className="relative overflow-hidden mb-6 aspect-square bg-black flex items-center justify-center">
-              <img 
-                alt="Identity Tee" 
-                className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4Uv9DGwsYfO_6pp8kkVaAAxAJ4-er2Uuxh-Fc5larjNmgYRv7E_DrH6GlkS7zZ6JL5Iut1NbMdRbAAqYrWnr22zvQZ3CFjTYCIK1bQCKrZvUD8Wu6iIb5Nf3cXAvoqdinNXVyB4aJNEXNiQTI6ve-Yv0EgyuirWsxfYMqKiRvBkOUwnpP8lPaxXzt8xr8oq6_rvZbytf_OufuopkPQwIthHo1TMrnOB0iw77rdt_3dCyOTLkZy0ZqtKDNQ4zDlqf8P3ujHwh-1fg" 
-              />
-              <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 font-label text-[10px] tracking-widest border border-primary/20">
-                SN: 312-IDNT
-              </div>
-            </div>
-            <div className="flex justify-between items-start">
-              <div>
-                <h4 className="font-headline font-bold text-lg uppercase text-zinc-100">Identity Tee</h4>
-                <div className="font-label text-[10px] tracking-[0.1em] opacity-40 uppercase">COLLECTORS_EDITION</div>
-              </div>
-              <span className="text-primary font-headline font-bold">$160</span>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
