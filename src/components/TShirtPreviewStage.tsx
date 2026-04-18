@@ -106,11 +106,11 @@ function CameraRig({ children, compact = false }: { children: ReactNode; compact
     const isMobile = window.innerWidth <= 600;
     const targetPosition: [number, number, number] = compact
       ? isMobile
-        ? [0, 0.12, 5.0]
-        : [0, 0.06, 4.5]
+        ? [0, 0.1, 3.6]
+        : [0, 0.05, 3.2]
       : isMobile
-        ? [0, 0.05, 4.5]
-        : [0, 0.0, 4.0];
+        ? [0, 0.05, 3.2]
+        : [0, 0.0, 2.8];
 
     easing.damp3(state.camera.position, targetPosition, 0.25, delta);
 
@@ -163,9 +163,9 @@ function Scene({
 
           <Center>
             <group
-              position={compact ? [0, -0.36, 0] : [0, -0.25, 0]}
+              position={compact ? [0, -0.28, 0] : [0, -0.18, 0]}
               rotation={[0, -0.1, 0]}
-              scale={compact ? 0.65 : 0.8}
+              scale={compact ? 1.0 : 1.15}
             >
               <ShirtModel
                 type={type}

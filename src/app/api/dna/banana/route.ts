@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 import QRCode from "qrcode";
 import { generateText } from "ai";
