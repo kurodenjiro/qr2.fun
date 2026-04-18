@@ -36,18 +36,18 @@ async function getAgentContext(handle: string) {
   const cleanHandle = normalizeHandle(handle);
   if (!cleanHandle) return null;
 
-  const profile = await db
+  const [profile] = await db
     .select()
     .from(twitterProfiles)
     .where(eq(twitterProfiles.handle, cleanHandle))
-    .get();
+    .limit(1);
 
-  const latestAnalysis = await db
+  const [latestAnalysis] = await db
     .select()
     .from(twitterStyleAnalyses)
     .where(eq(twitterStyleAnalyses.handle, cleanHandle))
     .orderBy(desc(twitterStyleAnalyses.createdAt))
-    .get();
+    .limit(1);
 
   const recentTweets = await db
     .select({

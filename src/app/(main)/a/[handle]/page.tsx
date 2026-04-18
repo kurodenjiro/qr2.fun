@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/db";
 import TwitterAgentChat from "@/components/TwitterAgentChat";
 import { twitterProfiles, twitterStyleAnalyses } from "@/db/schema";
+import { ensureTwitterVectorTables } from "@/db/bootstrap";
 
 type StyleAnalysis = {
   summary?: string;
@@ -25,18 +26,22 @@ export default async function TwitterAgentPage({ params }: { params: Promise<{ h
   const resolvedParams = await params;
   const handle = normalizeHandle(decodeURIComponent(resolvedParams.handle));
 
-  const profile = handle
-    ? await db.select().from(twitterProfiles).where(eq(twitterProfiles.handle, handle)).get()
-    : null;
+  if (handle) {
+    await ensureTwitterVectorTables();
+  }
 
-  const latestAnalysis = handle
+  const [profile] = handle
+    ? await db.select().from(twitterProfiles).where(eq(twitterProfiles.handle, handle)).limit(1)
+    : [null];
+
+  const [latestAnalysis] = handle
     ? await db
         .select()
         .from(twitterStyleAnalyses)
         .where(eq(twitterStyleAnalyses.handle, handle))
         .orderBy(desc(twitterStyleAnalyses.createdAt))
-        .get()
-    : null;
+        .limit(1)
+    : [null];
 
   const analysis = safeParseJson<StyleAnalysis>(latestAnalysis?.analysisJson);
 

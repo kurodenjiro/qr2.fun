@@ -81,19 +81,19 @@ export async function POST(request: Request) {
 
     await ensureTwitterVectorTables();
 
-    const profile = (await db
+    const [profile] = (await db
       .select()
       .from(twitterProfiles)
       .where(eq(twitterProfiles.handle, cleanHandle))
-      .get()) as TwitterProfileRow | undefined;
+      .limit(1)) as TwitterProfileRow[];
 
     if (!profile?.profileImageUrl) {
       return NextResponse.json({ error: "Twitter profile image not available. Sync the handle first." }, { status: 404 });
     }
 
-    const style = styleId
-      ? await db.select().from(artStyles).where(eq(artStyles.id, styleId)).get()
-      : null;
+    const [style] = styleId
+      ? await db.select().from(artStyles).where(eq(artStyles.id, styleId)).limit(1)
+      : [null];
 
     const styleName = style?.name ?? "DNA_STYLE";
     const styleDescription = style?.description ?? "Monochrome organic pattern";

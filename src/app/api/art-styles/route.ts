@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const id = searchParams.get("id");
 
     if (id) {
-      const style = await db.select().from(artStyles).where(eq(artStyles.id, id)).get();
+      const [style] = await db.select().from(artStyles).where(eq(artStyles.id, id)).limit(1);
       if (!style) {
         return NextResponse.json({ error: "Style not found" }, { status: 404 });
       }

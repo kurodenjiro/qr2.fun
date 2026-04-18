@@ -9,9 +9,9 @@ import TShirtPreviewStage from "@/components/TShirtPreviewStage";
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   await ensureArtStylesTable();
-  const design = await db.select().from(designs).where(eq(designs.id, resolvedParams.id)).get();
+  const [design] = await db.select().from(designs).where(eq(designs.id, resolvedParams.id)).limit(1);
   if (!design) notFound();
-  const style = await db.select().from(artStyles).where(eq(artStyles.id, design.styleId)).get();
+  const [style] = await db.select().from(artStyles).where(eq(artStyles.id, design.styleId)).limit(1);
   const styleName = style?.name ?? design.styleId;
   const baseMockupImage = design.type === "hoodie" ? "/images/hoodie-mockup.jpg" : "/images/tshirt-mockup.png";
   const price = design.type === "hoodie" ? 120 : 72;

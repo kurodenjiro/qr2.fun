@@ -5,6 +5,7 @@ import { dashboards, widgets } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { randomUUID } from 'crypto';
+import { ensureAppTables } from '@/db/bootstrap';
 
 export async function createDashboard(name: string) {
   const id = randomUUID();
@@ -18,11 +19,13 @@ export async function createDashboard(name: string) {
 }
 
 export async function getDashboards() {
+  await ensureAppTables();
   return await db.select().from(dashboards).where(eq(dashboards.ownerId, 'user_1'));
 }
 
 export async function getDashboard(id: string) {
-  const dashboard = await db.select().from(dashboards).where(eq(dashboards.id, id)).get();
+  await ensureAppTables();
+  const [dashboard] = await db.select().from(dashboards).where(eq(dashboards.id, id)).limit(1);
   if (!dashboard) return null;
   const dashboardWidgets = await db.select().from(widgets).where(eq(widgets.dashboardId, id));
   return { ...dashboard, widgets: dashboardWidgets };
