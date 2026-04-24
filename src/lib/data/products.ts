@@ -7,7 +7,7 @@ export const products: Product[] = [
     price: 299,
     priceLabel: '$299',
     image: '/assets/product-jacket-board.png',
-    palette: ['#ff8fae', '#cdb4ff', '#a7ebd6', '#111111'],
+    palette: ['#ff8fae', '#cdb4ff', '#b6e3f4', '#a7ebd6', '#111111'],
     category: 'tops',
     tags: ['new drop', 'streetwear'],
     shortDescription: 'Pink / M',

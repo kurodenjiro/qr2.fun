@@ -7,10 +7,8 @@
   {#each colors as color, index}
     <button
       aria-label={`Choose color ${index + 1}`}
-      class={`h-7 w-7 rounded-full border transition-transform ${
-        selected === index ? 'border-black scale-110 shadow-[0_0_0_3px_rgba(0,0,0,0.04)]' : 'border-black/6'
-      }`}
-      style={`background:${color}`}
+      class={`h-8 w-8 rounded-full border border-black/5 transition-transform ${selected === index ? 'scale-110' : ''}`}
+      style={`background:${color}; ${selected === index ? `box-shadow: 0 0 0 3px white, 0 0 0 5px ${color}60` : ''}`}
       type="button"
     ></button>
   {/each}
