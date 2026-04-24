@@ -1,14 +1,20 @@
 import type { PageLoad } from './$types';
-import { getProfileById } from '$lib/data/profiles';
-import type { DisplayMode } from '$lib/types';
+import { error } from '@sveltejs/kit';
+import { getProfileById, getProfileIds } from '$lib/data/profiles';
 
-export const load: PageLoad = ({ params, url }) => {
-  const mode: DisplayMode = url.searchParams.get('mode') === 'dark' ? 'dark' : 'light';
+export function entries() {
+  return getProfileIds().map((id) => ({ id }));
+}
+
+export const load: PageLoad = ({ params }) => {
   const profile = getProfileById(params.id);
+
+  if (!profile) {
+    throw error(404, 'Profile not found');
+  }
 
   return {
     qrId: params.id,
-    mode,
     profile
   };
 };

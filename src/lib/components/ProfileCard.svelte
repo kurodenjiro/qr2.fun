@@ -40,7 +40,9 @@
       <img
         alt="Ethereal mascot sticker"
         class="absolute -bottom-2 -right-3 h-11 w-11 rotate-[8deg] rounded-[16px] border border-white/50 bg-white/85 object-cover p-1 shadow-[0_12px_28px_rgba(17,17,17,0.18)]"
+        height="44"
         src={mascotSrc}
+        width="44"
       />
     </div>
   </div>

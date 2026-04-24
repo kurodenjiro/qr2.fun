@@ -21,3 +21,17 @@ export type ProfileData = {
   labels: string[];
   badges: string[];
 };
+
+export type Product = {
+  id: string;
+  name: string;
+  price: number;
+  priceLabel: string;
+  image: string;
+  palette: string[];
+  category: string;
+  tags: string[];
+  shortDescription: string;
+  description: string;
+  sizes: string[];
+};

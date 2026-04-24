@@ -55,3 +55,19 @@ export function buildMiniPayDeepLink(walletAddress: `0x${string}`, vndAmount: nu
 
   return `minipay://send?${params.toString()}`;
 }
+
+export function buildClaimRewardDeepLink() {
+  const data = encodeFunctionData({
+    abi: wearToEarnAbi,
+    functionName: 'claimReward',
+    args: []
+  });
+
+  const params = new URLSearchParams({
+    address: wearToEarnConfig.contractAddress,
+    data,
+    amount: '0'
+  });
+
+  return `minipay://send?${params.toString()}`;
+}

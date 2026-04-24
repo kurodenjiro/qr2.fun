@@ -35,6 +35,10 @@ const profiles: Record<string, ProfileData> = {
   }
 };
 
-export function getProfileById(id: string): ProfileData {
-  return profiles[id] ?? profiles['kuro-exe'];
+export function getProfileById(id: string): ProfileData | undefined {
+  return profiles[id];
+}
+
+export function getProfileIds() {
+  return Object.keys(profiles);
 }
