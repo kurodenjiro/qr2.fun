@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-lime: #c6f26d;
+  --color-lavender: #ebd5f7;
+  --color-offwhite: #fafafb;
+  --color-ink: #111111;
+  --color-coral: #ff8fae;
+  --color-mint: #a7ebd6;
+  --color-sunshine: #ffd966;
+  --color-lilac: #cdb4ff;
+
+  --font-display: "Cormorant Garamond", serif;
+  --font-sans: "Manrope", sans-serif;
+
+  --radius-card: 28px;
+  --radius-pill: 999px;
+
+  --shadow-float: 0 24px 60px rgba(17, 17, 17, 0.12);
+  --shadow-soft: 0 10px 30px rgba(17, 17, 17, 0.08);
+}
+
+:root {
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at top left, rgba(235, 213, 247, 0.75), transparent 28%),
+    linear-gradient(180deg, #d4f87f 0%, #fafafb 52%, #fff6fb 100%);
+  font-family: var(--font-sans);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--color-ink);
+  background-attachment: fixed;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.ethereal-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-float);
+}
+
+.ethereal-blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(14px);
+  opacity: 0.88;
+  pointer-events: none;
+}
+
+.soft-ring {
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.04),
+    0 10px 25px rgba(17, 17, 17, 0.08);
+}
+
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(17, 17, 17, 0.06) 0.6px, transparent 0.6px);
+  background-size: 12px 12px;
+  opacity: 0.1;
+  pointer-events: none;
+}
