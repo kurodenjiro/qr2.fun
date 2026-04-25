@@ -1,18 +1,20 @@
 <script lang="ts">
   import BottomNav from "$lib/components/BottomNav.svelte";
   import { products } from "$lib/data/products";
+  import type { PageData } from './$types';
 
-  const homePicks = [
+  export let data: PageData;
+  
+  // Use Shopify products if available, fallback to static products
+  const displayProducts = data.shopifyProducts?.length > 0 ? data.shopifyProducts : products;
+
+  $: homePicks = [
     {
-      product: products.find(
-        (product) => product.id === "cargo-parachute-pants",
-      )!,
-      cardImage: "/assets/product-pants-board.png",
+      product: displayProducts[0] || products[0],
       background: "#edf7d1",
     },
     {
-      product: products.find((product) => product.id === "light-suit")!,
-      cardImage: "/assets/product-suit-board.png",
+      product: displayProducts[1] || products[1],
       background: "#e9d4fb",
     },
   ];
@@ -151,12 +153,11 @@
           class="animate-marquee-reverse flex whitespace-nowrap font-display text-[1.8rem] font-bold uppercase tracking-[0.2em]"
           style="-webkit-text-stroke: 1.5px rgba(188,230,103,0.8); color: rgba(198,242,109,0.3);"
         >
-          <span class="pr-6"
-            >ETHEREAL STORE ✦ ETHEREAL STORE ✦ ETHEREAL STORE ✦</span
-          >
-          <span class="pr-6"
-            >ETHEREAL STORE ✦ ETHEREAL STORE ✦ ETHEREAL STORE ✦</span
-          >
+          <span class="pr-6">
+            {#each data.shopifyProducts as p}
+              {p.id} ✦ 
+            {/each}
+          </span>
         </div>
       </div>
     </section>
@@ -208,9 +209,7 @@
                 <img
                   alt={pick.product.name}
                   class="max-h-full w-auto object-contain mix-blend-multiply"
-                  height="140"
-                  src={pick.cardImage}
-                  width="140"
+                  src={pick.product.image}
                 />
               </div>
             </div>

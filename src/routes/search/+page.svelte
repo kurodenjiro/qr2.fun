@@ -4,20 +4,12 @@
   import BottomNav from '$lib/components/BottomNav.svelte';
   import ProductCard from '$lib/components/ProductCard.svelte';
   import { products, searchSuggestions } from '$lib/data/products';
+  import type { PageData } from './$types';
 
-  function matchesQuery(query: string, value: string) {
-    return value.toLowerCase().includes(query);
-  }
+  export let data: PageData;
 
   $: query = browser ? ($page.url.searchParams.get('q')?.trim() ?? '') : '';
-  $: normalizedQuery = query.toLowerCase();
-  $: results = normalizedQuery
-    ? products.filter((product) =>
-        [product.name, product.category, product.description, product.shortDescription, ...product.tags].some(
-          (value) => matchesQuery(normalizedQuery, value)
-        )
-      )
-    : products;
+  $: results = data.results?.length > 0 ? data.results : products;
 </script>
 
 <svelte:head>
