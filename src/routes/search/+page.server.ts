@@ -1,6 +1,8 @@
 import { getProducts } from '$lib/shopify';
 import type { PageServerLoad } from './$types';
 
+export const prerender = false;
+
 export const load: PageServerLoad = async ({ url }) => {
   const query = url.searchParams.get('q') || '';
   // Since Storefront API doesn't have a simple keyword search without more complex setup,

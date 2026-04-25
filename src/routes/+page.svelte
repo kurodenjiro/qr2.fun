@@ -1,23 +1,13 @@
 <script lang="ts">
   import BottomNav from "$lib/components/BottomNav.svelte";
-  import { products } from "$lib/data/products";
   import type { PageData } from './$types';
 
   export let data: PageData;
-  
-  // Use Shopify products if available, fallback to static products
-  const displayProducts = data.shopifyProducts?.length > 0 ? data.shopifyProducts : products;
 
-  $: homePicks = [
-    {
-      product: displayProducts[0] || products[0],
-      background: "#edf7d1",
-    },
-    {
-      product: displayProducts[1] || products[1],
-      background: "#e9d4fb",
-    },
-  ];
+  $: homePicks = (data.shopifyProducts || []).slice(0, 2).map((product, i) => ({
+    product,
+    background: i === 0 ? "#edf7d1" : "#e9d4fb",
+  }));
 </script>
 
 <svelte:head>

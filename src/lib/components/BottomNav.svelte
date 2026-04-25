@@ -42,6 +42,7 @@
   {#each items as item}
     {#if item.id === "builder"}
       <a
+        aria-label="AI Builder"
         class="relative flex min-w-[3.45rem] flex-col items-center justify-center px-1 -my-1"
         href={item.href}
       >
