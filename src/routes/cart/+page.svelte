@@ -58,9 +58,9 @@
       </div>
 
       <div class="mt-6">
-        <button class="w-full rounded-[1.8rem] bg-[#d2f371] py-[1.15rem] text-[0.95rem] font-extrabold uppercase tracking-[0.05em] text-ink hover:bg-[#c4ec50] shadow-[0_8px_20px_rgba(210,243,113,0.3)]">
+        <a href="/checkout" class="block w-full text-center rounded-[1.8rem] bg-[#d2f371] py-[1.15rem] text-[0.95rem] font-extrabold uppercase tracking-[0.05em] text-ink hover:bg-[#c4ec50] shadow-[0_8px_20px_rgba(210,243,113,0.3)]">
           Checkout
-        </button>
+        </a>
       </div>
     </div>
   </section>

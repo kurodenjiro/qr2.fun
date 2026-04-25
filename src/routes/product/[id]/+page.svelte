@@ -60,10 +60,10 @@
     </section>
 
     <div class="mt-8 px-1">
-      <button class="relative flex w-full items-center justify-center gap-3 rounded-[1.8rem] bg-ink py-[1.1rem] text-white hover:bg-black/90 shadow-[0_12px_24px_rgba(17,17,17,0.2)]">
+      <a href="/cart" class="relative flex w-full items-center justify-center gap-3 rounded-[1.8rem] bg-ink py-[1.1rem] text-white hover:bg-black/90 shadow-[0_12px_24px_rgba(17,17,17,0.2)]">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#cdb4ff" stroke="#cdb4ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-lilac translate-y-[-1px]"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span class="text-[0.85rem] font-extrabold uppercase tracking-[0.05em] translate-y-[1px]">Add To Cart</span>
-      </button>
+      </a>
     </div>
 
     <section class="mt-7">
